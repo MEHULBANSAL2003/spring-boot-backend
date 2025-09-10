@@ -1,16 +1,16 @@
 package com.springbootBackend.backend.controller;
 
+import com.springbootBackend.backend.dto.UserAuthRequestDto;
 import jakarta.persistence.Entity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api")
 public class AuthController {
 
-    @GetMapping("/signup")
-    public String signup(){
+    @PostMapping("/signup")
+    public String signup(@RequestBody UserAuthRequestDto userRequest){
+        System.out.println(userRequest);
          return "signup successfull";
     }
 }
