@@ -1,6 +1,8 @@
 package com.springbootBackend.backend.dto;
 
+
 public class UserAuthRequestDto {
+
 
      private String email;
      private String userName;

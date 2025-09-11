@@ -1,16 +1,17 @@
 package com.springbootBackend.backend.controller;
 
+import com.springbootBackend.backend.constants.ApiConstants;
 import com.springbootBackend.backend.dto.UserAuthRequestDto;
 import jakarta.persistence.Entity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping(ApiConstants.AUTH_BASE)
 public class AuthController {
 
-    @PostMapping("/signup")
+    @PostMapping(ApiConstants.SIGNUP)
     public String signup(@RequestBody UserAuthRequestDto userRequest){
-        System.out.println(userRequest);
-         return "signup successfull";
+        System.out.println(userRequest.getEmail());
+         return userRequest.getEmail();
     }
 }
