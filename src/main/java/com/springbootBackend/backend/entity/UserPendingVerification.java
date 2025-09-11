@@ -18,17 +18,18 @@ public class UserPendingVerification {
 
 @Id
 @GeneratedValue(strategy = GenerationType.IDENTITY)
-Long id;
-String countryCode;
+private Long id;
+private String countryCode;
 @Column(unique = true)
-String phoneNumber;
+private String phoneNumber;
 @Column(unique = true)
-String email;
+private String email;
 @Column(unique = true, nullable = false)
-String userName;
-String otp;
-LocalTime timeLeft;
-String incorrectAttempts;
+private String userName;
+@Column(length = 6)
+private String otp;
+private LocalDateTime otpExpiryTime;
+private Integer incorrectAttempts;
 
 @CreationTimestamp
 private LocalDateTime createdAt;

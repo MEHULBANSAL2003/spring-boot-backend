@@ -24,6 +24,7 @@ public class UserDataEntity {
     private String hashedEmail;
     @Column(unique = true, nullable = false)
     private String userName;
+    @Column(nullable = false)
     private String hashedPassword;
 
     public enum Gender {
