@@ -25,6 +25,6 @@ public class MobileSignUpRequestDto {
 
     public String getPhoneNumber(){return this.phoneNumber;}
     public String getPassword(){return this.password;}
-    public String getUserName(){return this.phoneNumber;}
+    public String getUserName(){return this.userName;}
 
 }

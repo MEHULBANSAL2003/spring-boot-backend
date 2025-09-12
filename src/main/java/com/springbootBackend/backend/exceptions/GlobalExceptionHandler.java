@@ -56,6 +56,14 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(error,HttpStatus.METHOD_NOT_ALLOWED);
     }
 
+    // already exists- 409(conflict)
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<CustomErrorMsgFormat> handleIllegalArgumentException(IllegalArgumentException ex, HttpServletRequest request) {
+        CustomErrorMsgFormat error = new CustomErrorMsgFormat(HttpStatus.CONFLICT.getReasonPhrase(), ex.getMessage(), request.getRequestURI(), HttpStatus.CONFLICT.value());
+        return new ResponseEntity<>(error,HttpStatus.CONFLICT);
+    }
+
     //internal server error exception - 500
 
     @ExceptionHandler(Exception.class)
