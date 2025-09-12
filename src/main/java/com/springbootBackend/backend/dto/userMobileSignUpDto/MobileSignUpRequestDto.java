@@ -12,6 +12,7 @@ public class MobileSignUpRequestDto {
 
     @NotBlank(message = "Username is required")
     @Size(min = 3, max = 20, message = "Username must be between 3 and 20 characters")
+    @Pattern(regexp = "^[a-zA-Z0-9._@]{3,20}$", message = "Username can only contain letters, numbers, dot (.), underscore (_), and at (@), and must be 3–20 characters long")
     String userName;
 
     @NotBlank(message = "Password is required")
