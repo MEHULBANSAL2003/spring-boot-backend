@@ -6,23 +6,23 @@ import java.time.LocalDateTime;
 
 public class MethodNotFound {
 
-    private String status;
-    private String reason;
+    private String error;
+    private String message;
     private LocalDateTime timestamp;
-    private int httpCode;
+    private int status;
     private String path;
 
-    public MethodNotFound(String status, String reason, String path, int httpCode) {
-        this.status = status;
-        this.reason = reason;
+    public MethodNotFound(String error, String message, String path, int status) {
+        this.error = error;
+        this.message = message;
         this.timestamp = LocalDateTime.now();
-        this.httpCode = httpCode;
+        this.status = status;
         this.path = path;
     }
 
-    public String getStatus() { return status; }
-    public String getReason() { return reason; }
+    public String getError() { return error; }
+    public String getReason() { return message; }
     public LocalDateTime getTimestamp(){ return timestamp; }
-    public int getHttpCode() { return httpCode; }
+    public int getStatus() { return status; }
     public String getPath() { return path; }
 }

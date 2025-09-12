@@ -21,16 +21,16 @@ public class GlobalExceptionHandler {
 @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<InputValidationError> handleValidationExceptions(MethodArgumentNotValidException ex, HttpServletRequest request){
     FieldError fieldError = (FieldError) ex.getBindingResult().getAllErrors().get(0);
-    String reason = fieldError.getDefaultMessage();
-    InputValidationError error = new InputValidationError("fail", reason, request.getRequestURI(), HttpStatus.BAD_REQUEST.value());
+    String message = fieldError.getDefaultMessage();
+    InputValidationError error = new InputValidationError(HttpStatus.BAD_REQUEST.getReasonPhrase(), message, request.getRequestURI(), HttpStatus.BAD_REQUEST.value());
     return new ResponseEntity<>(error,HttpStatus.BAD_REQUEST);
 };
 
-//not founf error: 404
+//not found error: 404
 
     @ExceptionHandler(NoHandlerFoundException.class)
     public ResponseEntity<MethodNotFound> handleNotFoundExeption(NoHandlerFoundException ex, HttpServletRequest request){
-        MethodNotFound error = new MethodNotFound("fail", "The requested URL was not found", request.getRequestURI(), HttpStatus.NOT_FOUND.value());
+        MethodNotFound error = new MethodNotFound(HttpStatus.NOT_FOUND.getReasonPhrase(), "The requested URL was not found", request.getRequestURI(), HttpStatus.NOT_FOUND.value());
         return new ResponseEntity<MethodNotFound>(error,HttpStatus.NOT_FOUND);
     }
 
