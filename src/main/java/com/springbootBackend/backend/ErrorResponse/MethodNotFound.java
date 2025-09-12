@@ -21,7 +21,7 @@ public class MethodNotFound {
     }
 
     public String getError() { return error; }
-    public String getReason() { return message; }
+    public String getMessage() { return message; }
     public LocalDateTime getTimestamp(){ return timestamp; }
     public int getStatus() { return status; }
     public String getPath() { return path; }

@@ -6,6 +6,7 @@ import com.springbootBackend.backend.ErrorResponse.MethodNotFound;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.ErrorResponse;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -25,6 +26,21 @@ public class GlobalExceptionHandler {
     InputValidationError error = new InputValidationError(HttpStatus.BAD_REQUEST.getReasonPhrase(), message, request.getRequestURI(), HttpStatus.BAD_REQUEST.value());
     return new ResponseEntity<>(error,HttpStatus.BAD_REQUEST);
 };
+
+//validation error : 400
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<InputValidationError> handleHttpMessageNotReadable(
+            HttpMessageNotReadableException ex, HttpServletRequest request) {
+
+        InputValidationError error = new InputValidationError(
+                HttpStatus.BAD_REQUEST.getReasonPhrase(),
+                "Request body is missing or malformed",
+                request.getRequestURI(),
+                HttpStatus.BAD_REQUEST.value()
+        );
+
+        return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+    }
 
 //not found error: 404
 
