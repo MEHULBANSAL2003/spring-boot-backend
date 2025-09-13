@@ -14,6 +14,8 @@ import java.time.LocalTime;
         @Index(name="idx_userName", columnList = "userName"),
         @Index(name = "idx_phoneNumber", columnList = "phoneNumber")
 })
+
+@org.hibernate.annotations.Check(constraints = "email IS NOT NULL OR phone_number IS NOT NULL")
 public class UserPendingVerification {
 
 @Id

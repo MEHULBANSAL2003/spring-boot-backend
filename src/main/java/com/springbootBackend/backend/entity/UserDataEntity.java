@@ -46,9 +46,6 @@ public class UserDataEntity {
     private String currStatus;
     private LocalDateTime lastLogin;
 
-    @Column(nullable = false)
-    private Integer failedAttempts;
-
     @CreationTimestamp
     private LocalDateTime createdAt;
 

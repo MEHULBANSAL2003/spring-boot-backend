@@ -29,6 +29,7 @@ public class AuthServiceImpl implements AuthService {
             throw new UserNameExistsException("Username already taken: "+ userName);
         }
 
+
         MobileSignUpResponseDto response = new MobileSignUpResponseDto("success", 4, true,"Otp sent successfully",300,60);
         return response;
     }
