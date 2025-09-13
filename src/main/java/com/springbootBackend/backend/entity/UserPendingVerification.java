@@ -2,6 +2,7 @@ package com.springbootBackend.backend.entity;
 
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -34,6 +35,8 @@ private String otp;
 private LocalDateTime otpExpiryTime;
 private Integer incorrectAttempts;
 
+private LocalDateTime retryAfter;
+
 @CreationTimestamp
 private LocalDateTime createdAt;
 
@@ -47,5 +50,8 @@ public enum Status{
 @Enumerated(EnumType.STRING)  // store as "PENDING", "ACTIVE"
 @Column(nullable = false)
 private Status verificationStatus = Status.PENDING; // default value
+
+@NotNull
+private boolean isTwilioActive;
 
 }

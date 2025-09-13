@@ -30,7 +30,7 @@ public class AuthServiceImpl implements AuthService {
         }
 
 
-        MobileSignUpResponseDto response = new MobileSignUpResponseDto("success", 4, true,"Otp sent successfully",300,60);
+        MobileSignUpResponseDto response = new MobileSignUpResponseDto("success", 4, true,"Otp sent successfully",300,60, true);
         return response;
     }
 }

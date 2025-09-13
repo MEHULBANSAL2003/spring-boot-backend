@@ -12,14 +12,16 @@ public class MobileSignUpResponseDto {
     String message;
     int expiresIn;
     int retryAfter;
+    boolean isTwilioActive;
 
-    public MobileSignUpResponseDto(String status, int otpLength, boolean isOtpRequired,String message,int expiresIn, int retryAfter){
+    public MobileSignUpResponseDto(String status, int otpLength, boolean isOtpRequired,String message,int expiresIn, int retryAfter, boolean isTwilioActive){
         this.status = status;
         this.isOtpRequired = isOtpRequired;
         this.otpLength = otpLength;
         this.message = message;
         this.expiresIn = expiresIn;
         this.retryAfter = retryAfter;
+        this.isTwilioActive = isTwilioActive;
     }
 
     public String getStatus(){ return this.status; }
@@ -28,5 +30,6 @@ public class MobileSignUpResponseDto {
     public String getMessage(){return this.message; }
     public int getExpiresIn(){return this.expiresIn; }
     public int getRetryAfter(){return this.retryAfter;}
+    public boolean getIsTwilioActive(){return this.isTwilioActive; }
 
 }
