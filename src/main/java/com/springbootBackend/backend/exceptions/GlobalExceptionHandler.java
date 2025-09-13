@@ -2,6 +2,8 @@ package com.springbootBackend.backend.exceptions;
 
 
 import com.springbootBackend.backend.ErrorResponse.CustomErrorMsgFormat;
+import com.springbootBackend.backend.exceptions.customExceptions.IncorrectOtpException;
+import com.springbootBackend.backend.exceptions.customExceptions.OtpExpiresException;
 import com.springbootBackend.backend.exceptions.customExceptions.PhoneNumberAlreadyExistsException;
 import com.springbootBackend.backend.exceptions.customExceptions.UserNameExistsException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -56,6 +58,12 @@ public class GlobalExceptionHandler {
     public ResponseEntity<CustomErrorMsgFormat> handleHttpRequestMethodNotAllowedException(HttpRequestMethodNotSupportedException ex, HttpServletRequest request){
         CustomErrorMsgFormat error = new CustomErrorMsgFormat(HttpStatus.METHOD_NOT_ALLOWED.getReasonPhrase(), "The HTTP method used is not supported for this endpoint.", request.getRequestURI(), HttpStatus.METHOD_NOT_ALLOWED.value());
         return new ResponseEntity<>(error,HttpStatus.METHOD_NOT_ALLOWED);
+    }
+
+    @ExceptionHandler({OtpExpiresException.class, IncorrectOtpException.class})
+    public ResponseEntity<CustomErrorMsgFormat> invalidOtpCredentialsException(Exception ex, HttpServletRequest request){
+        CustomErrorMsgFormat error = new CustomErrorMsgFormat(HttpStatus.BAD_REQUEST.getReasonPhrase(), ex.getMessage(), request.getRequestURI(), HttpStatus.BAD_REQUEST.value());
+        return new ResponseEntity<>(error,HttpStatus.BAD_REQUEST);
     }
 
     // custom exception (409 -> phone number already exists)

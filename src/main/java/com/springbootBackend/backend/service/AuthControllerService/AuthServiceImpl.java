@@ -3,7 +3,10 @@ package com.springbootBackend.backend.service.AuthControllerService;
 
 import com.springbootBackend.backend.dto.userMobileSignUpDto.MobileSignUpResponseDto;
 import com.springbootBackend.backend.dto.userMobileSignUpVerificationDto.UserMobileSignupVerificationResponseDto;
+import com.springbootBackend.backend.entity.UserDataEntity;
 import com.springbootBackend.backend.entity.UserPendingVerification;
+import com.springbootBackend.backend.exceptions.customExceptions.IncorrectOtpException;
+import com.springbootBackend.backend.exceptions.customExceptions.OtpExpiresException;
 import com.springbootBackend.backend.exceptions.customExceptions.PhoneNumberAlreadyExistsException;
 import com.springbootBackend.backend.exceptions.customExceptions.UserNameExistsException;
 import com.springbootBackend.backend.helper.OtpGenerator;
@@ -55,7 +58,7 @@ public class AuthServiceImpl implements AuthService {
 
         }
         pendingUser.setOtp(String.valueOf(otp));
-        pendingUser.setOtpExpiryTime(LocalDateTime.now().plusMinutes(5));
+        pendingUser.setOtpExpiryTime(LocalDateTime.now().plusMinutes(10));
 
         userPendingVerificationRepository.save(pendingUser);
 
@@ -67,6 +70,37 @@ public class AuthServiceImpl implements AuthService {
     @Override
     @Transactional
     public UserMobileSignupVerificationResponseDto mobileSignUpVerifyOtp(String userName, String otp) {
-        return null;
+
+        UserPendingVerification pendingUser = userPendingVerificationRepository.findByUserName(userName).orElse(null);
+        UserDataEntity verifiedUser = userDataRepository.findByUserName(userName).orElse(null);
+
+        if(pendingUser==null && verifiedUser==null){
+            throw new UserNameExistsException("No such username exists"+ userName);
+        }
+        if(pendingUser!=null && pendingUser.getOtpExpiryTime().isBefore(LocalDateTime.now())){
+          throw new OtpExpiresException("Otp expired!! Resend otp to continue!!");
+        }
+
+        if(pendingUser!=null && !pendingUser.getOtp().equals(otp)){
+            throw new IncorrectOtpException("Incorrect otp.Please enter the correct otp");
+        }
+
+        UserDataEntity newUser = new UserDataEntity();
+
+        newUser.setUserName(pendingUser.getUserName());
+        newUser.setPhoneNumber(pendingUser.getPhoneNumber());
+        newUser.setCountryCode(pendingUser.getCountryCode());
+        newUser.setHashedPassword(pendingUser.getPassword()); // ideally already hashed
+        newUser.setEmail(pendingUser.getEmail());
+        newUser.setCurrStatus("ACTIVE");
+        newUser.setLastLogin(LocalDateTime.now());
+        newUser.setHashedEmail(pendingUser.getEmail());
+        newUser.setCountryCode("+91");
+
+        UserDataEntity savedUser = userDataRepository.save(newUser);
+        userPendingVerificationRepository.delete(pendingUser);
+
+        return new UserMobileSignupVerificationResponseDto("success",savedUser.getUserId(),savedUser.getEmail(),savedUser.getUserName(),savedUser.getCountryCode(),savedUser.getPhoneNumber(), savedUser.getCreatedAt(),savedUser.getUpdatedAt());
+
     }
 }

@@ -3,6 +3,8 @@ package com.springbootBackend.backend.controller;
 import com.springbootBackend.backend.constants.ApiConstants;
 import com.springbootBackend.backend.dto.userMobileSignUpDto.MobileSignUpRequestDto;
 import com.springbootBackend.backend.dto.userMobileSignUpDto.MobileSignUpResponseDto;
+import com.springbootBackend.backend.dto.userMobileSignUpVerificationDto.UserMobileSignupVerificationRequestDto;
+import com.springbootBackend.backend.dto.userMobileSignUpVerificationDto.UserMobileSignupVerificationResponseDto;
 import com.springbootBackend.backend.service.AuthControllerService.AuthServiceImpl;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,5 +23,11 @@ public class AuthController {
     public ResponseEntity<MobileSignUpResponseDto> userMobileSignupGetOtp(@Valid @RequestBody MobileSignUpRequestDto requestDto){
         MobileSignUpResponseDto response = authService.mobileSignupGetOtp(requestDto.getPhoneNumber(), requestDto.getUserName(), requestDto.getPassword());
         return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @PostMapping(ApiConstants.MOBILE_SIGNUP_OTP_VERIFY)
+    public  ResponseEntity<UserMobileSignupVerificationResponseDto> userMobileSignupVerifyOtp(@Valid @RequestBody UserMobileSignupVerificationRequestDto requestDto){
+        UserMobileSignupVerificationResponseDto response = authService.mobileSignUpVerifyOtp(requestDto.getUserName(),requestDto.getOtp());
+        return new ResponseEntity<>(response,HttpStatus.OK);
     }
 }
