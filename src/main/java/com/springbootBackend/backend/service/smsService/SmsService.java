@@ -21,8 +21,6 @@ public class SmsService {
                     "Your Otp code for signup is: " + otp +". Please enter this otp to successfully signup to create account at company@mehul."
             ).create();
 
-            System.out.println("message" + message);
-
             return true;
         } catch (ApiException e) {
             System.err.println("Twilio API error: " + e.getMessage());

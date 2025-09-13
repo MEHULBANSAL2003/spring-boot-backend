@@ -69,8 +69,6 @@ public class AuthServiceImpl implements AuthService {
             throw new IncorrectOtpException("Error sending sms. Please try again later");
         }
 
-        System.out.println("smsSent"+ smsSent);
-
         userPendingVerificationRepository.save(pendingUser);
 
         MobileSignUpResponseDto response = new MobileSignUpResponseDto("success", 6, true,"Otp sent successfully", 300,true);
