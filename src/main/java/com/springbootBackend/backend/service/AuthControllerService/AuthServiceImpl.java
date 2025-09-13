@@ -74,6 +74,10 @@ public class AuthServiceImpl implements AuthService {
         UserPendingVerification pendingUser = userPendingVerificationRepository.findByUserName(userName).orElse(null);
         UserDataEntity verifiedUser = userDataRepository.findByUserName(userName).orElse(null);
 
+        if(verifiedUser!=null){
+            throw new UserNameExistsException("Username already taken: "+ userName);
+        }
+
         if(pendingUser==null && verifiedUser==null){
             throw new UserNameExistsException("No such username exists"+ userName);
         }
