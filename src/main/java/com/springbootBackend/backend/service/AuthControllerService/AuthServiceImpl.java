@@ -59,7 +59,6 @@ public class AuthServiceImpl implements AuthService {
             pendingUser.setIncorrectAttempts(0);
             pendingUser.setOtpExpiryTime(LocalDateTime.now().plusMinutes(5));
             pendingUser.setIsTwilioActive(true);
-
         }
         pendingUser.setOtp(String.valueOf(otp));
         pendingUser.setOtpExpiryTime(LocalDateTime.now().plusMinutes(10));
@@ -77,7 +76,7 @@ public class AuthServiceImpl implements AuthService {
 
 
     @Override
-    @Transactional
+    @Transactional(dontRollbackOn = IncorrectOtpException.class)
     public UserMobileSignupVerificationResponseDto mobileSignUpVerifyOtp(String userName, String otp) {
 
         UserPendingVerification pendingUser = userPendingVerificationRepository.findByUserName(userName).orElse(null);
