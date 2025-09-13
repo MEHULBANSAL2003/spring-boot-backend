@@ -33,11 +33,15 @@ public class AuthServiceImpl implements AuthService {
     @Transactional
     public MobileSignUpResponseDto mobileSignupGetOtp(String phoneNumber, String userName, String password) {
 
-        if(userDataRepository.findByPhoneNumber(phoneNumber).isPresent()){
-            throw new PhoneNumberAlreadyExistsException("Phone number already registered: "+ phoneNumber);
-        }
-        if (userDataRepository.findByUserName(userName).isPresent()) {
-            throw new UserNameExistsException("Username already taken: "+ userName);
+        UserDataEntity existing = userDataRepository.findByUserName(userName).orElse(null);
+
+        if(existing!=null){
+            if(existing.getPhoneNumber().equals(phoneNumber)){
+                throw new PhoneNumberAlreadyExistsException("Phone number already registered: "+ phoneNumber);
+            }
+            if(existing.getUserName().equals(userName)){
+                throw new UserNameExistsException("Username already taken: "+ userName);
+            }
         }
 
         int otp = new OtpGenerator().generateOtp();
