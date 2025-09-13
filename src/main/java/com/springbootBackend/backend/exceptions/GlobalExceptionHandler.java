@@ -7,6 +7,7 @@ import com.springbootBackend.backend.exceptions.customExceptions.OtpExpiresExcep
 import com.springbootBackend.backend.exceptions.customExceptions.PhoneNumberAlreadyExistsException;
 import com.springbootBackend.backend.exceptions.customExceptions.UserNameExistsException;
 import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -71,6 +72,17 @@ public class GlobalExceptionHandler {
     public ResponseEntity<CustomErrorMsgFormat> handlePhoneNumberAlreadyRegisteredException(Exception ex, HttpServletRequest request){
         CustomErrorMsgFormat error = new CustomErrorMsgFormat(HttpStatus.CONFLICT.getReasonPhrase(), ex.getMessage(), request.getRequestURI(), HttpStatus.CONFLICT.value());
         return new ResponseEntity<>(error,HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler(DataAccessException.class)
+    public ResponseEntity<CustomErrorMsgFormat> handleDatabaseError(DataAccessException ex, HttpServletRequest request) {
+        CustomErrorMsgFormat error = new CustomErrorMsgFormat(
+                HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase(),
+                "error: "+ex.getMostSpecificCause().getMessage(),
+                request.getRequestURI(),
+                HttpStatus.INTERNAL_SERVER_ERROR.value()
+        );
+        return new ResponseEntity<>(error, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
 
