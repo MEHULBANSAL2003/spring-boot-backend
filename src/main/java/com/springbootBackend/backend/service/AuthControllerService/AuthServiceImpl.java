@@ -12,6 +12,7 @@ import com.springbootBackend.backend.exceptions.customExceptions.UserNameExistsE
 import com.springbootBackend.backend.helper.OtpGenerator;
 import com.springbootBackend.backend.repository.UserDataRepository;
 import com.springbootBackend.backend.repository.UserPendingVerificationRepository;
+import com.springbootBackend.backend.service.smsService.SmsService;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -26,6 +27,9 @@ public class AuthServiceImpl implements AuthService {
     UserDataRepository userDataRepository;
     @Autowired
     UserPendingVerificationRepository userPendingVerificationRepository;
+
+    @Autowired
+    private SmsService smsService;
 
 
     @Override
@@ -59,6 +63,13 @@ public class AuthServiceImpl implements AuthService {
         }
         pendingUser.setOtp(String.valueOf(otp));
         pendingUser.setOtpExpiryTime(LocalDateTime.now().plusMinutes(10));
+        String number = "+91"+phoneNumber;
+        boolean smsSent = smsService.sendSms(number,String.valueOf(otp));
+        if(!smsSent){
+            throw new IncorrectOtpException("Error sending sms. Please try again later");
+        }
+
+        System.out.println("smsSent"+ smsSent);
 
         userPendingVerificationRepository.save(pendingUser);
 
