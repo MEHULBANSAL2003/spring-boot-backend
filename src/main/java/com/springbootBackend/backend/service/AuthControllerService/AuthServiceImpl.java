@@ -82,6 +82,8 @@ public class AuthServiceImpl implements AuthService {
         }
 
         if(pendingUser!=null && !pendingUser.getOtp().equals(otp)){
+            pendingUser.setIncorrectAttempts(pendingUser.getIncorrectAttempts() + 1);
+            userPendingVerificationRepository.save(pendingUser);
             throw new IncorrectOtpException("Incorrect otp.Please enter the correct otp");
         }
 
