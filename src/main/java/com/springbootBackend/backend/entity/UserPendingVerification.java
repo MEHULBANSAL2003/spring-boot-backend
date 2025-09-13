@@ -51,7 +51,11 @@ public enum Status{
 }
 @Enumerated(EnumType.STRING)  // store as "PENDING", "ACTIVE"
 @Column(nullable = false)
-private Status verificationStatus = Status.PENDING; // default value
+private Status verificationStatus = Status.PENDING;
+
+private int otpRequestCount;
+
+private LocalDateTime otpRequestWindowStart;
 
 
 
@@ -95,5 +99,15 @@ private Status verificationStatus = Status.PENDING; // default value
 
     public boolean getIsTwilioActive() { return isTwilioActive; }
     public void setIsTwilioActive(boolean twilioActive) { isTwilioActive = twilioActive; }
+
+    public void setOtpRequestCount(int otpRequestCount){
+        this.otpRequestCount = otpRequestCount;
+    }
+    public int getOtpRequestCount(){return this.otpRequestCount; }
+
+    public void setOtpRequestWindowStart(LocalDateTime otpRequestWindowStart){
+        this.otpRequestWindowStart = otpRequestWindowStart;
+    }
+    public LocalDateTime getOtpRequestWindowStart(){return this.otpRequestWindowStart; }
 
 }

@@ -56,7 +56,22 @@ public class AuthServiceImpl implements AuthService {
             pendingUser.setIncorrectAttempts(0);
             pendingUser.setOtpExpiryTime(LocalDateTime.now().plusMinutes(10));
             pendingUser.setIsTwilioActive(true);
+            pendingUser.setOtpRequestCount(0);
+            pendingUser.setOtpRequestWindowStart(LocalDateTime.now());
         }
+
+        LocalDateTime now = LocalDateTime.now();
+        if (pendingUser.getOtpRequestWindowStart() != null && pendingUser.getOtpRequestWindowStart().isAfter(now.minusMinutes(10))) {
+
+            if (pendingUser.getOtpRequestCount() >= 5) {
+                throw new IncorrectOtpLimitReachException("You have exceeded the maximum number of OTP attempts. Please try again later.");
+            }
+            pendingUser.setOtpRequestCount(pendingUser.getOtpRequestCount() + 1);
+        } else {
+            pendingUser.setOtpRequestWindowStart(now);
+            pendingUser.setOtpRequestCount(1);
+        }
+
         pendingUser.setOtp(String.valueOf(otp));
         pendingUser.setOtpExpiryTime(LocalDateTime.now().plusMinutes(10));
         pendingUser.setIncorrectAttempts(0);
