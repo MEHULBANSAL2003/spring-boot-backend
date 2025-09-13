@@ -12,6 +12,7 @@ import com.springbootBackend.backend.repository.UserPendingVerificationRepositor
 import com.springbootBackend.backend.service.smsService.SmsService;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -24,6 +25,9 @@ public class AuthServiceImpl implements AuthService {
     UserDataRepository userDataRepository;
     @Autowired
     UserPendingVerificationRepository userPendingVerificationRepository;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @Autowired
     private SmsService smsService;
@@ -50,13 +54,16 @@ public class AuthServiceImpl implements AuthService {
                 .findByUserName(userName)
                 .orElse(null);
 
+        String hashedPassword = passwordEncoder.encode(password);
+        String hashedOtp = passwordEncoder.encode(String.valueOf(otp));
+
         if(pendingUser == null){
             pendingUser = new UserPendingVerification();
             pendingUser.setPhoneNumber(phoneNumber);
            pendingUser.setCountryCode("+91");
-           pendingUser.setPassword(password);
+           pendingUser.setPassword(hashedPassword);
             pendingUser.setUserName(userName);
-            pendingUser.setOtp(String.valueOf(otp));
+            pendingUser.setOtp(hashedOtp);
             pendingUser.setIncorrectAttempts(0);
             pendingUser.setOtpExpiryTime(LocalDateTime.now().plusMinutes(10));
             pendingUser.setIsTwilioActive(true);
@@ -76,7 +83,7 @@ public class AuthServiceImpl implements AuthService {
             pendingUser.setOtpRequestCount(1);
         }
 
-        pendingUser.setOtp(String.valueOf(otp));
+        pendingUser.setOtp(hashedOtp);
         pendingUser.setOtpExpiryTime(LocalDateTime.now().plusMinutes(10));
         pendingUser.setIncorrectAttempts(0);
 
@@ -113,7 +120,7 @@ public class AuthServiceImpl implements AuthService {
             throw new IncorrectOtpLimitReachException("You have exceeded the maximum number of OTP attempts. Please try again later.");
         }
 
-        if(pendingUser!=null && !pendingUser.getOtp().equals(otp)){
+        if(pendingUser!=null &&  !passwordEncoder.matches(otp,pendingUser.getOtp())){
             pendingUser.setIncorrectAttempts(pendingUser.getIncorrectAttempts() + 1);
             userPendingVerificationRepository.save(pendingUser);
             throw new IncorrectOtpException("Incorrect otp.Please enter the correct otp");

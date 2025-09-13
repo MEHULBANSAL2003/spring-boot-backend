@@ -30,7 +30,6 @@ private String email;
 @Column(unique = true, nullable = false)
 private String userName;
 private String password;
-@Column(length = 6)
 private String otp;
 private LocalDateTime otpExpiryTime;
 private Integer incorrectAttempts;
