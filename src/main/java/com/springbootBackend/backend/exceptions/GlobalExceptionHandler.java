@@ -2,6 +2,8 @@ package com.springbootBackend.backend.exceptions;
 
 
 import com.springbootBackend.backend.ErrorResponse.CustomErrorMsgFormat;
+import com.springbootBackend.backend.exceptions.customExceptions.PhoneNumberAlreadyExistsException;
+import com.springbootBackend.backend.exceptions.customExceptions.UserNameExistsException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -56,16 +58,15 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(error,HttpStatus.METHOD_NOT_ALLOWED);
     }
 
-    // already exists- 409(conflict)
-
-    @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<CustomErrorMsgFormat> handleIllegalArgumentException(IllegalArgumentException ex, HttpServletRequest request) {
+    // custom exception (409 -> phone number already exists)
+    @ExceptionHandler({PhoneNumberAlreadyExistsException.class, UserNameExistsException.class,IllegalArgumentException.class})
+    public ResponseEntity<CustomErrorMsgFormat> handlePhoneNumberAlreadyRegisteredException(Exception ex, HttpServletRequest request){
         CustomErrorMsgFormat error = new CustomErrorMsgFormat(HttpStatus.CONFLICT.getReasonPhrase(), ex.getMessage(), request.getRequestURI(), HttpStatus.CONFLICT.value());
         return new ResponseEntity<>(error,HttpStatus.CONFLICT);
     }
 
-    //internal server error exception - 500
 
+    //internal server error exception - 500
     @ExceptionHandler(Exception.class)
     public ResponseEntity<CustomErrorMsgFormat> handleInternalServerException(Exception ex, HttpServletRequest request){
         CustomErrorMsgFormat error = new CustomErrorMsgFormat(HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase(), "An unexpected error occurred. Please try again later.", request.getRequestURI(), HttpStatus.INTERNAL_SERVER_ERROR.value());

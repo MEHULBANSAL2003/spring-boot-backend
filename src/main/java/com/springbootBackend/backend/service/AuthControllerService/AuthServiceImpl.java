@@ -2,6 +2,8 @@ package com.springbootBackend.backend.service.AuthControllerService;
 
 
 import com.springbootBackend.backend.dto.userMobileSignUpDto.MobileSignUpResponseDto;
+import com.springbootBackend.backend.exceptions.customExceptions.PhoneNumberAlreadyExistsException;
+import com.springbootBackend.backend.exceptions.customExceptions.UserNameExistsException;
 import com.springbootBackend.backend.repository.UserDataRepository;
 import com.springbootBackend.backend.repository.UserPendingVerificationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,10 +23,10 @@ public class AuthServiceImpl implements AuthService {
     public MobileSignUpResponseDto mobileSignupGetOtp(String phoneNumber, String userName, String password) {
 
         if(userDataRepository.findByPhoneNumber(phoneNumber).isPresent()){
-            throw new IllegalArgumentException("Phone number already registered");
+            throw new PhoneNumberAlreadyExistsException("Phone number already registered: "+ phoneNumber);
         }
         if (userDataRepository.findByUserName(userName).isPresent()) {
-            throw new IllegalArgumentException("Username already taken");
+            throw new UserNameExistsException("Username already taken: "+ userName);
         }
 
         MobileSignUpResponseDto response = new MobileSignUpResponseDto("success", 4, true,"Otp sent successfully",300,60);
