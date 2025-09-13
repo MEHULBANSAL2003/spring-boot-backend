@@ -8,4 +8,5 @@ import java.util.Optional;
 public interface UserPendingVerificationRepository extends JpaRepository<UserPendingVerification,Long> {
     Optional<UserPendingVerification> findByPhoneNumber(String phoneNumber);
     Optional<UserPendingVerification> findByUserName(String userName);
+
 }

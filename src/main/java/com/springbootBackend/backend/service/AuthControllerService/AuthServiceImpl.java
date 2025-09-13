@@ -2,12 +2,16 @@ package com.springbootBackend.backend.service.AuthControllerService;
 
 
 import com.springbootBackend.backend.dto.userMobileSignUpDto.MobileSignUpResponseDto;
+import com.springbootBackend.backend.entity.UserPendingVerification;
 import com.springbootBackend.backend.exceptions.customExceptions.PhoneNumberAlreadyExistsException;
 import com.springbootBackend.backend.exceptions.customExceptions.UserNameExistsException;
+import com.springbootBackend.backend.helper.OtpGenerator;
 import com.springbootBackend.backend.repository.UserDataRepository;
 import com.springbootBackend.backend.repository.UserPendingVerificationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
 
 @Service
 public class AuthServiceImpl implements AuthService {
@@ -29,8 +33,21 @@ public class AuthServiceImpl implements AuthService {
             throw new UserNameExistsException("Username already taken: "+ userName);
         }
 
+        int otp = new OtpGenerator().generateOtp();
 
-        MobileSignUpResponseDto response = new MobileSignUpResponseDto("success", 4, true,"Otp sent successfully",300,60, true);
+        UserPendingVerification pendingUser = new UserPendingVerification();
+        pendingUser.setPhoneNumber(phoneNumber);
+        pendingUser.setCountryCode("+91");
+        pendingUser.setPassword(password);
+        pendingUser.setUserName(userName);
+        pendingUser.setOtp(String.valueOf(otp));
+        pendingUser.setIncorrectAttempts(0);
+        pendingUser.setOtpExpiryTime(LocalDateTime.now().plusMinutes(5));
+        pendingUser.setIsTwilioActive(true);
+
+        userPendingVerificationRepository.save(pendingUser);
+
+        MobileSignUpResponseDto response = new MobileSignUpResponseDto("success", 6, true,"Otp sent successfully", 300,true);
         return response;
     }
 }
