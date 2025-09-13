@@ -2,10 +2,7 @@ package com.springbootBackend.backend.exceptions;
 
 
 import com.springbootBackend.backend.ErrorResponse.CustomErrorMsgFormat;
-import com.springbootBackend.backend.exceptions.customExceptions.IncorrectOtpException;
-import com.springbootBackend.backend.exceptions.customExceptions.OtpExpiresException;
-import com.springbootBackend.backend.exceptions.customExceptions.PhoneNumberAlreadyExistsException;
-import com.springbootBackend.backend.exceptions.customExceptions.UserNameExistsException;
+import com.springbootBackend.backend.exceptions.customExceptions.*;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
@@ -83,6 +80,12 @@ public class GlobalExceptionHandler {
                 HttpStatus.INTERNAL_SERVER_ERROR.value()
         );
         return new ResponseEntity<>(error, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @ExceptionHandler(IncorrectOtpLimitReachException.class)
+    public ResponseEntity<CustomErrorMsgFormat> handlIncorrectOtpLimitException(IncorrectOtpLimitReachException ex, HttpServletRequest request) {
+        CustomErrorMsgFormat error = new CustomErrorMsgFormat(HttpStatus.TOO_MANY_REQUESTS.getReasonPhrase(), ex.getMessage(), request.getRequestURI(), HttpStatus.TOO_MANY_REQUESTS.value());
+        return new ResponseEntity<>(error,HttpStatus.TOO_MANY_REQUESTS);
     }
 
 

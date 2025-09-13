@@ -5,10 +5,7 @@ import com.springbootBackend.backend.dto.userMobileSignUpDto.MobileSignUpRespons
 import com.springbootBackend.backend.dto.userMobileSignUpVerificationDto.UserMobileSignupVerificationResponseDto;
 import com.springbootBackend.backend.entity.UserDataEntity;
 import com.springbootBackend.backend.entity.UserPendingVerification;
-import com.springbootBackend.backend.exceptions.customExceptions.IncorrectOtpException;
-import com.springbootBackend.backend.exceptions.customExceptions.OtpExpiresException;
-import com.springbootBackend.backend.exceptions.customExceptions.PhoneNumberAlreadyExistsException;
-import com.springbootBackend.backend.exceptions.customExceptions.UserNameExistsException;
+import com.springbootBackend.backend.exceptions.customExceptions.*;
 import com.springbootBackend.backend.helper.OtpGenerator;
 import com.springbootBackend.backend.repository.UserDataRepository;
 import com.springbootBackend.backend.repository.UserPendingVerificationRepository;
@@ -57,11 +54,13 @@ public class AuthServiceImpl implements AuthService {
             pendingUser.setUserName(userName);
             pendingUser.setOtp(String.valueOf(otp));
             pendingUser.setIncorrectAttempts(0);
-            pendingUser.setOtpExpiryTime(LocalDateTime.now().plusMinutes(5));
+            pendingUser.setOtpExpiryTime(LocalDateTime.now().plusMinutes(10));
             pendingUser.setIsTwilioActive(true);
         }
         pendingUser.setOtp(String.valueOf(otp));
         pendingUser.setOtpExpiryTime(LocalDateTime.now().plusMinutes(10));
+        pendingUser.setIncorrectAttempts(0);
+
         String number = "+91"+phoneNumber;
         boolean smsSent = smsService.sendSms(number,String.valueOf(otp));
         if(!smsSent){
@@ -78,19 +77,21 @@ public class AuthServiceImpl implements AuthService {
     @Override
     @Transactional(dontRollbackOn = IncorrectOtpException.class)
     public UserMobileSignupVerificationResponseDto mobileSignUpVerifyOtp(String userName, String otp) {
-
-        UserPendingVerification pendingUser = userPendingVerificationRepository.findByUserName(userName).orElse(null);
         UserDataEntity verifiedUser = userDataRepository.findByUserName(userName).orElse(null);
 
         if(verifiedUser!=null){
             throw new UserNameExistsException("Username already taken: "+ userName);
         }
+        UserPendingVerification pendingUser = userPendingVerificationRepository.findByUserName(userName).orElse(null);
 
-        if(pendingUser==null && verifiedUser==null){
+        if(pendingUser==null){
             throw new UserNameExistsException("No such username exists"+ userName);
         }
         if(pendingUser!=null && pendingUser.getOtpExpiryTime().isBefore(LocalDateTime.now())){
           throw new OtpExpiresException("Otp expired!! Resend otp to continue!!");
+        }
+        if(pendingUser.getIncorrectAttempts()>5){
+            throw new IncorrectOtpLimitReachException("You have exceeded the maximum number of OTP attempts. Please try again later.");
         }
 
         if(pendingUser!=null && !pendingUser.getOtp().equals(otp)){
