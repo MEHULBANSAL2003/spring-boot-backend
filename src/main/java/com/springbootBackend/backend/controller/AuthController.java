@@ -1,6 +1,10 @@
 package com.springbootBackend.backend.controller;
 
 import com.springbootBackend.backend.constants.ApiConstants;
+import com.springbootBackend.backend.dto.userEmailMobileSignUpVerificationDto.UserEmailSignupVerificationRequestDto;
+import com.springbootBackend.backend.dto.userEmailMobileSignUpVerificationDto.UserEmailSignupVerificationResponseDto;
+import com.springbootBackend.backend.dto.userEmailSignUpDto.EmailSignUpRequestDto;
+import com.springbootBackend.backend.dto.userEmailSignUpDto.EmailSignUpResponseDto;
 import com.springbootBackend.backend.dto.userMobileSignUpDto.MobileSignUpRequestDto;
 import com.springbootBackend.backend.dto.userMobileSignUpDto.MobileSignUpResponseDto;
 import com.springbootBackend.backend.dto.userMobileSignUpVerificationDto.UserMobileSignupVerificationRequestDto;
@@ -30,4 +34,17 @@ public class AuthController {
         UserMobileSignupVerificationResponseDto response = authService.mobileSignUpVerifyOtp(requestDto.getUserName(),requestDto.getOtp());
         return new ResponseEntity<>(response,HttpStatus.OK);
     }
+
+    @PostMapping(ApiConstants.EMAIL_SIGNUP)
+    public ResponseEntity<EmailSignUpResponseDto> userEmailSignupGetOtp(@Valid @RequestBody EmailSignUpRequestDto requestDto){
+        EmailSignUpResponseDto response = authService.emailSignupGetOtp(requestDto.getEmail(), requestDto.getUserName(), requestDto.getPassword());
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @PostMapping(ApiConstants.EMAIL_SIGNUP_OTP_VERIFY)
+    public  ResponseEntity<UserMobileSignupVerificationResponseDto> userEmailSignupVerifyOtp(@Valid @RequestBody UserMobileSignupVerificationRequestDto requestDto){
+        UserMobileSignupVerificationResponseDto response = authService.mobileSignUpVerifyOtp(requestDto.getUserName(),requestDto.getOtp());
+        return new ResponseEntity<>(response,HttpStatus.OK);
+    }
+
 }

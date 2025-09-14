@@ -18,7 +18,7 @@ public class SmsService {
             Message message = Message.creator(
                     new PhoneNumber(toPhoneNumber),
                     new PhoneNumber(twilioConfig.getFromPhoneNumber()),
-                    "Your Otp code for signup is: " + otp +". Please enter this otp to successfully signup to create account at company@mehul."
+                    "Your Otp code for signup is: " + otp +". Please enter this otp to successfully signup to create account at company@mehul.(Valid only for 10 minutes)"
             ).create();
 
             return true;
