@@ -60,19 +60,6 @@ public class AuthServiceImpl implements AuthService {
                 .findByUserName(userName)
                 .orElse(new UserPendingVerification());
 
-
-        pendingUser.setEmail(null);
-            pendingUser.setPhoneNumber(phoneNumber);
-           pendingUser.setCountryCode("+91");
-           pendingUser.setPassword(hashedPassword);
-            pendingUser.setUserName(userName);
-            pendingUser.setOtp(hashedOtp);
-            pendingUser.setIncorrectAttempts(0);
-            pendingUser.setOtpExpiryTime(LocalDateTime.now().plusMinutes(10));
-            pendingUser.setIsTwilioActive(true);
-            pendingUser.setOtpRequestCount(0);
-            pendingUser.setOtpRequestWindowStart(LocalDateTime.now());
-
         LocalDateTime now = LocalDateTime.now();
         if (pendingUser.getOtpRequestWindowStart() != null && pendingUser.getOtpRequestWindowStart().isAfter(now.minusMinutes(10))) {
 
@@ -84,10 +71,15 @@ public class AuthServiceImpl implements AuthService {
             pendingUser.setOtpRequestWindowStart(now);
             pendingUser.setOtpRequestCount(1);
         }
-
+        pendingUser.setEmail(null);
+        pendingUser.setPhoneNumber(phoneNumber);
+        pendingUser.setCountryCode("+91");
+        pendingUser.setPassword(hashedPassword);
+        pendingUser.setUserName(userName);
         pendingUser.setOtp(hashedOtp);
-        pendingUser.setOtpExpiryTime(LocalDateTime.now().plusMinutes(10));
         pendingUser.setIncorrectAttempts(0);
+        pendingUser.setOtpExpiryTime(LocalDateTime.now().plusMinutes(10));
+        pendingUser.setIsTwilioActive(true);
 
         String number = "+91"+phoneNumber;
         boolean smsSent = smsService.sendSms(number,String.valueOf(otp));
@@ -166,20 +158,9 @@ public class AuthServiceImpl implements AuthService {
         String hashedPassword = passwordEncoder.encode(password);
         String hashedOtp = passwordEncoder.encode(String.valueOf(otp));
 
-        UserPendingVerification pendingUser = userPendingVerificationRepository.findByUserName(userName).orElse(new UserPendingVerification());
-
-            pendingUser = new UserPendingVerification();
-            pendingUser.setEmail(email);
-            pendingUser.setPassword(hashedPassword);
-            pendingUser.setUserName(userName);
-            pendingUser.setOtp(hashedOtp);
-            pendingUser.setIncorrectAttempts(0);
-            pendingUser.setOtpExpiryTime(LocalDateTime.now().plusMinutes(10));
-            pendingUser.setIsTwilioActive(false);
-            pendingUser.setOtpRequestCount(0);
-            pendingUser.setOtpRequestWindowStart(LocalDateTime.now());
-           pendingUser.setPhoneNumber(null);
-
+        UserPendingVerification pendingUser = userPendingVerificationRepository
+                .findByUserName(userName)
+                .orElse(new UserPendingVerification());
         LocalDateTime now = LocalDateTime.now();
         if (pendingUser.getOtpRequestWindowStart() != null && pendingUser.getOtpRequestWindowStart().isAfter(now.minusMinutes(10))) {
 
@@ -192,9 +173,16 @@ public class AuthServiceImpl implements AuthService {
             pendingUser.setOtpRequestCount(1);
         }
 
+        pendingUser.setEmail(email);
+        pendingUser.setPassword(hashedPassword);
+        pendingUser.setUserName(userName);
         pendingUser.setOtp(hashedOtp);
-        pendingUser.setOtpExpiryTime(LocalDateTime.now().plusMinutes(10));
         pendingUser.setIncorrectAttempts(0);
+        pendingUser.setOtpExpiryTime(LocalDateTime.now().plusMinutes(10));
+        pendingUser.setIsTwilioActive(false);
+        pendingUser.setPhoneNumber(null);
+
+
 
         try {
             emailService.sendOtpEmail(email, String.valueOf(otp));
