@@ -45,6 +45,8 @@ public class UserDataEntity {
     private String phoneNumber;
     private String currStatus;
     private LocalDateTime lastLogin;
+    private int incorrectAttempts;
+    private LocalDateTime incorrectAttemptTimeWindowStart;
 
     @CreationTimestamp
     private LocalDateTime createdAt;
@@ -171,6 +173,19 @@ public class UserDataEntity {
 
     public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    public void setIncorrectAttempts(int incorrectAttempts){
+        this.incorrectAttempts = incorrectAttempts;
+    }
+    public int getIncorrectAttempts(){
+        return this.incorrectAttempts;
+    }
+    public void setIncorrectAttemptTimeWindowStart(LocalDateTime incorrectAttemptTimeWindowStart){
+        this.incorrectAttemptTimeWindowStart = incorrectAttemptTimeWindowStart;
+    }
+    public LocalDateTime getIncorrectAttemptTimeWindowStart(){
+        return this.incorrectAttemptTimeWindowStart;
     }
 
 }

@@ -195,7 +195,7 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    @Transactional
+    @Transactional(dontRollbackOn = IncorrectPassword.class)
     public LoginByUserNamePasswordResponseDto loginUserByCredentials(String identifier, String password){
 
         UserDataEntity user = userDataRepository.findByIdentifier(identifier).orElse(null);
@@ -205,11 +205,14 @@ public class AuthServiceImpl implements AuthService {
         }
        boolean isPasswordCorrect =  passwordEncoder.matches(password, user.getHashedPassword());
 
+
         if(!isPasswordCorrect){
+             user.setIncorrectAttempts(user.getIncorrectAttempts()+1);
+            userDataRepository.save(user);
             throw new IncorrectPassword("You have entered incorrect Password.");
         }
 
-        // handle the case of no of times incorrect otp entered.. if entered 5 times incorrect in timespan of 5 min.. block for 30 minutes
+        // handle the case of no of times incorrect otp entered.. if entered 5 times incorrect in timespan of 5 min.. block for 30 minutes by curr state inactive for 30 min;
 
         LoginByUserNamePasswordResponseDto response = new LoginByUserNamePasswordResponseDto(
                 "SUCCESS",
