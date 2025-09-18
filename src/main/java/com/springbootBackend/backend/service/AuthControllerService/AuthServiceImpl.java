@@ -41,7 +41,7 @@ public class AuthServiceImpl implements AuthService {
     @Transactional
     public MobileSignUpResponseDto mobileSignupGetOtp(String phoneNumber, String userName, String password) {
 
-        UserDataEntity existing = userDataRepository.findByUserName(userName).orElse(null);
+        UserDataEntity existing = userDataRepository.findByUserNameOrPhoneNumber(userName,phoneNumber).orElse(null);
 
         if(existing!=null){
             if(existing.getPhoneNumber().equals(phoneNumber)){
@@ -143,7 +143,7 @@ public class AuthServiceImpl implements AuthService {
     @Override
     @Transactional
     public EmailSignUpResponseDto emailSignupGetOtp(String email, String userName, String password) {
-        UserDataEntity existing = userDataRepository.findByUserName(userName).orElse(null);
+        UserDataEntity existing = userDataRepository.findByUserNameOrEmail(userName, email).orElse(null);
 
         if(existing!=null){
             if(existing.getEmail().equals(email)){
