@@ -6,16 +6,15 @@ import jakarta.validation.constraints.Size;
 
 public class LoginByUserNamePasswordRequestDto {
 
-    @NotBlank(message = "Username is required")
-    @Size(min = 3, max = 20, message = "Username must be between 3 and 20 characters")
-    String userName;
+    @NotBlank(message = "Username, email, or phone number is required")
+    String identifier;
 
     @NotBlank(message = "Password is required")
     String password;
 
-    public void setUserName(String userName){this.userName = userName; }
+    public void setIdentifier(String identifier){this.identifier = identifier; }
     public void setPassword(String password){this.password = password; }
-    public String getUserName(){return this.userName; }
+    public String getIdentifier(){return this.identifier; }
     public String getPassword(){return this.password; }
 
 }

@@ -10,7 +10,5 @@ public class ApiConstants {
     public static final String MOBILE_SIGNUP ="/user/signup/mobile/get-otp";
     public static final String MOBILE_SIGNUP_OTP_VERIFY = "/user/signup/mobile/otp/verify";
     public static final String EMAIL_SIGNUP_OTP_VERIFY = "/user/signup/email/otp/verify";
-    public static final String MOBILE_LOGIN = "/user/login/by/mobile";
-    public static final String EMAIL_LOGIN = "user/login/by/email";
-    public static final String USERNAME_LOGIN = "user/login/by/username";
+    public static final String LOGIN_BY_IDENTIFIER = "user/login/by/identifier";
 }

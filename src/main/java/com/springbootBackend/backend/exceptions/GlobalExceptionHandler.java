@@ -71,6 +71,12 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(error,HttpStatus.CONFLICT);
     }
 
+    @ExceptionHandler({IdentifierNotFound.class,IncorrectPassword.class})
+    public ResponseEntity<CustomErrorMsgFormat> handleIdentifierNotFoundException(Exception ex, HttpServletRequest request){
+        CustomErrorMsgFormat error = new CustomErrorMsgFormat(HttpStatus.UNAUTHORIZED.getReasonPhrase(),ex.getMessage(), request.getRequestURI(), HttpStatus.UNAUTHORIZED.value());
+        return new ResponseEntity<>(error, HttpStatus.UNAUTHORIZED);
+    }
+
     @ExceptionHandler(DataAccessException.class)
     public ResponseEntity<CustomErrorMsgFormat> handleDatabaseError(DataAccessException ex, HttpServletRequest request) {
         CustomErrorMsgFormat error = new CustomErrorMsgFormat(
@@ -87,6 +93,7 @@ public class GlobalExceptionHandler {
         CustomErrorMsgFormat error = new CustomErrorMsgFormat(HttpStatus.TOO_MANY_REQUESTS.getReasonPhrase(), ex.getMessage(), request.getRequestURI(), HttpStatus.TOO_MANY_REQUESTS.value());
         return new ResponseEntity<>(error,HttpStatus.TOO_MANY_REQUESTS);
     }
+
 
 
     //internal server error exception - 500

@@ -49,9 +49,9 @@ public class AuthController {
         return new ResponseEntity<>(response,HttpStatus.OK);
     }
 
-    @PostMapping(ApiConstants.USERNAME_LOGIN)
-    public ResponseEntity<LoginByUserNamePasswordResponseDto> loginByUserNameAndPassword(@Valid @RequestBody LoginByUserNamePasswordRequestDto requestDto){
-        LoginByUserNamePasswordResponseDto response = authService.loginByUsernameAndPassword(requestDto.getUserName(), requestDto.getPassword());
+    @PostMapping(ApiConstants.LOGIN_BY_IDENTIFIER)
+    public ResponseEntity<LoginByUserNamePasswordResponseDto> loginUserByCredentials(@Valid @RequestBody LoginByUserNamePasswordRequestDto requestDto){
+        LoginByUserNamePasswordResponseDto response = authService.loginUserByCredentials(requestDto.getIdentifier(), requestDto.getPassword());
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 

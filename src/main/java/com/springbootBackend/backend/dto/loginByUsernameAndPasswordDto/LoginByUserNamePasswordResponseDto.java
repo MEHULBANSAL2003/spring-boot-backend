@@ -1,5 +1,8 @@
 package com.springbootBackend.backend.dto.loginByUsernameAndPasswordDto;
 
+import com.springbootBackend.backend.entity.UserDataEntity;
+
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Date;
 
@@ -11,9 +14,9 @@ public class LoginByUserNamePasswordResponseDto {
     private String userName;
     private String countryCode;
     private String phoneNumber;
-    private int age;
-    private Date dob;
-    private String gender;
+    private Integer age;
+    private LocalDate dob;
+    private UserDataEntity.Gender gender;
     private String profile_pic;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
@@ -23,8 +26,8 @@ public class LoginByUserNamePasswordResponseDto {
 
     // All-args constructor
     public LoginByUserNamePasswordResponseDto(String status, Long userId, String email, String userName,
-                                              String countryCode, String phoneNumber, int age, Date dob,
-                                              String gender, String profile_pic, LocalDateTime createdAt,
+                                              String countryCode, String phoneNumber, Integer age, LocalDate dob,
+                                              UserDataEntity.Gender gender, String profile_pic, LocalDateTime createdAt,
                                               LocalDateTime updatedAt) {
         this.status = status;
         this.userId = userId;
@@ -89,27 +92,27 @@ public class LoginByUserNamePasswordResponseDto {
         this.phoneNumber = phoneNumber;
     }
 
-    public int getAge() {
+    public Integer getAge() {
         return age;
     }
 
-    public void setAge(int age) {
+    public void setAge(Integer age) {
         this.age = age;
     }
 
-    public Date getDob() {
+    public LocalDate getDob() {
         return dob;
     }
 
-    public void setDob(Date dob) {
+    public void setDob(LocalDate dob) {
         this.dob = dob;
     }
 
-    public String getGender() {
+    public UserDataEntity.Gender getGender() {
         return gender;
     }
 
-    public void setGender(String gender) {
+    public void setGender(UserDataEntity.Gender gender) {
         this.gender = gender;
     }
 

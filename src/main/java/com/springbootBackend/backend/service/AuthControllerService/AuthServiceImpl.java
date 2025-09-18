@@ -196,8 +196,39 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     @Transactional
-    public LoginByUserNamePasswordResponseDto loginByUsernameAndPassword(String userName, String password){
+    public LoginByUserNamePasswordResponseDto loginUserByCredentials(String identifier, String password){
 
+        UserDataEntity user = userDataRepository.findByIdentifier(identifier).orElse(null);
+
+        if(user == null){
+            throw new IdentifierNotFound("Invalid credentials.Please provide correct credentials");
+        }
+       boolean isPasswordCorrect =  passwordEncoder.matches(password, user.getHashedPassword());
+
+        if(!isPasswordCorrect){
+            throw new IncorrectPassword("You have entered incorrect Password.");
+        }
+
+        // handle the case of no of times incorrect otp entered.. if entered 5 times incorrect in timespan of 5 min.. block for 30 minutes
+
+        LoginByUserNamePasswordResponseDto response = new LoginByUserNamePasswordResponseDto(
+                "SUCCESS",
+                user.getUserId(),
+                user.getEmail(),
+                user.getUserName(),
+                user.getCountryCode(),
+                user.getPhoneNumber(),
+                user.getAge(),
+                user.getDateOfBirth(),
+                user.getGender(),
+                user.getProfilePicUrl(),
+                user.getCreatedAt(),
+                user.getUpdatedAt()
+        );
+
+        // generate jwt token..
+
+        return response;
 
     }
 }

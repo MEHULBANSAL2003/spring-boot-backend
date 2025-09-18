@@ -14,5 +14,5 @@ public interface AuthService {
 
     public EmailSignUpResponseDto emailSignupGetOtp(String email, String userName, String password);
 
-    public LoginByUserNamePasswordResponseDto loginByUsernameAndPassword(String userName, String password);
+    public LoginByUserNamePasswordResponseDto loginUserByCredentials(String identifier, String password);
 }
