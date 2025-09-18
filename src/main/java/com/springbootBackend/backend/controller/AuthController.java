@@ -1,6 +1,8 @@
 package com.springbootBackend.backend.controller;
 
 import com.springbootBackend.backend.constants.ApiConstants;
+import com.springbootBackend.backend.dto.loginByUsernameAndPasswordDto.LoginByUserNamePasswordRequestDto;
+import com.springbootBackend.backend.dto.loginByUsernameAndPasswordDto.LoginByUserNamePasswordResponseDto;
 import com.springbootBackend.backend.dto.userEmailMobileSignUpVerificationDto.UserEmailSignupVerificationRequestDto;
 import com.springbootBackend.backend.dto.userEmailMobileSignUpVerificationDto.UserEmailSignupVerificationResponseDto;
 import com.springbootBackend.backend.dto.userEmailSignUpDto.EmailSignUpRequestDto;
@@ -45,6 +47,12 @@ public class AuthController {
     public  ResponseEntity<UserMobileSignupVerificationResponseDto> userEmailSignupVerifyOtp(@Valid @RequestBody UserMobileSignupVerificationRequestDto requestDto){
         UserMobileSignupVerificationResponseDto response = authService.mobileSignUpVerifyOtp(requestDto.getUserName(),requestDto.getOtp());
         return new ResponseEntity<>(response,HttpStatus.OK);
+    }
+
+    @PostMapping(ApiConstants.USERNAME_LOGIN)
+    public ResponseEntity<LoginByUserNamePasswordResponseDto> loginByUserNameAndPassword(@Valid @RequestBody LoginByUserNamePasswordRequestDto requestDto){
+        LoginByUserNamePasswordResponseDto response = authService.loginByUsernameAndPassword(requestDto.getUserName(), requestDto.getPassword());
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
 }

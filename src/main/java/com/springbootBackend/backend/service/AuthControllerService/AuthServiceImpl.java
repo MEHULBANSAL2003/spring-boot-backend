@@ -1,5 +1,6 @@
 package com.springbootBackend.backend.service.AuthControllerService;
 
+import com.springbootBackend.backend.dto.loginByUsernameAndPasswordDto.LoginByUserNamePasswordResponseDto;
 import com.springbootBackend.backend.dto.userEmailSignUpDto.EmailSignUpResponseDto;
 import com.springbootBackend.backend.dto.userMobileSignUpDto.MobileSignUpResponseDto;
 import com.springbootBackend.backend.dto.userMobileSignUpVerificationDto.UserMobileSignupVerificationResponseDto;
@@ -139,7 +140,6 @@ public class AuthServiceImpl implements AuthService {
 
     }
 
-
     @Override
     @Transactional
     public EmailSignUpResponseDto emailSignupGetOtp(String email, String userName, String password) {
@@ -182,8 +182,6 @@ public class AuthServiceImpl implements AuthService {
         pendingUser.setIsTwilioActive(false);
         pendingUser.setPhoneNumber(null);
 
-
-
         try {
             emailService.sendOtpEmail(email, String.valueOf(otp));
         } catch (Exception e) {
@@ -194,5 +192,12 @@ public class AuthServiceImpl implements AuthService {
 
         EmailSignUpResponseDto response = new EmailSignUpResponseDto("success", 6, true,"Otp sent successfully", 300,true);
         return response;
+    }
+
+    @Override
+    @Transactional
+    public LoginByUserNamePasswordResponseDto loginByUsernameAndPassword(String userName, String password){
+
+
     }
 }
