@@ -47,6 +47,10 @@ public class UserDataEntity {
     private LocalDateTime lastLogin;
     private int incorrectAttempts;
     private LocalDateTime incorrectAttemptTimeWindowStart;
+    private int blockedCount;
+    private LocalDateTime blockedStartTime;
+    private int blockForMin;
+
 
     @CreationTimestamp
     private LocalDateTime createdAt;
@@ -186,6 +190,26 @@ public class UserDataEntity {
     }
     public LocalDateTime getIncorrectAttemptTimeWindowStart(){
         return this.incorrectAttemptTimeWindowStart;
+    }
+    public void setBlockedCount(int blockedCount){
+        this.blockedCount = blockedCount;
+    }
+    public int getBlockedCount(){
+        return this.blockedCount;
+    }
+
+    public void setBlockedStartTime(LocalDateTime blockedStartTime){
+        this.blockedStartTime = blockedStartTime;
+    }
+    public LocalDateTime getBlockedStartTime(){
+        return this.blockedStartTime;
+    }
+
+    public void setBlockForMin(int blockForMin){
+          this.blockForMin = blockForMin;
+    }
+    public  int getBlockForMin(){
+        return this.blockForMin;
     }
 
 }
