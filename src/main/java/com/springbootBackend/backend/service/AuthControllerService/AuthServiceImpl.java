@@ -205,9 +205,25 @@ public class AuthServiceImpl implements AuthService {
         }
        boolean isPasswordCorrect =  passwordEncoder.matches(password, user.getHashedPassword());
 
+      if(user.getIncorrectAttempts()>5 && user.getIncorrectAttemptTimeWindowStart().plusMinutes(5).isAfter(LocalDateTime.now())){
+          int noOfTimesUserIsblocked = user.getBlockedCount();
+          if(noOfTimesUserIsblocked>5){
+              user.setBlockForMin(1440);
+              user.setBlockedStartTime(LocalDateTime.now());
+          }
+          else{
+              user.setBlockedCount(user.getBlockedCount()+1);
+              user.setBlockForMin(user.getBlockForMin()+30);
+              user.setBlockedStartTime(LocalDateTime.now());
+
+          }
+            throw new Error("");
+      }
+
 
         if(!isPasswordCorrect){
              user.setIncorrectAttempts(user.getIncorrectAttempts()+1);
+             user.setIncorrectAttemptTimeWindowStart(LocalDateTime.now());
             userDataRepository.save(user);
             throw new IncorrectPassword("You have entered incorrect Password.");
         }
