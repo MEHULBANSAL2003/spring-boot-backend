@@ -2,8 +2,6 @@ package com.springbootBackend.backend.entity;
 import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
-
-import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
@@ -18,7 +16,6 @@ public class UserDataEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long userId;
-
     @Column(unique = true)
     private String email;
     private String hashedEmail;
@@ -26,14 +23,10 @@ public class UserDataEntity {
     private String userName;
     @Column(nullable = false)
     private String hashedPassword;
-
     public enum Gender {
         MALE, FEMALE, OTHER
     }
-
     private Gender gender;
-
-
     private Integer age;
     private LocalDate dateOfBirth;
     private String profilePicUrl;
@@ -43,12 +36,22 @@ public class UserDataEntity {
 
     @Column(length = 20, unique = true)
     private String phoneNumber;
-    private String currStatus;
+    public enum userStatus{
+        ACTIVE,INACTIVE,BLOCKED,TEMP_BLOCKED
+    };
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private userStatus currStatus=userStatus.ACTIVE;
+
     private LocalDateTime lastLogin;
+
+
+    // blocked use case
     private int incorrectAttempts;
     private LocalDateTime incorrectAttemptTimeWindowStart;
     private int blockedCount;
     private LocalDateTime blockedStartTime;
+    private LocalDateTime blockedEndTime;
     private int blockForMin;
 
 
@@ -147,11 +150,11 @@ public class UserDataEntity {
         this.phoneNumber = phoneNumber;
     }
 
-    public String getCurrStatus() {
+    public userStatus getCurrStatus() {
         return currStatus;
     }
 
-    public void setCurrStatus(String currStatus) {
+    public void setCurrStatus(userStatus currStatus) {
         this.currStatus = currStatus;
     }
 
@@ -210,6 +213,12 @@ public class UserDataEntity {
     }
     public  int getBlockForMin(){
         return this.blockForMin;
+    }
+    public void setBlockedEndTime(LocalDateTime blockedEndTime){
+        this.blockedEndTime = blockedEndTime;
+    }
+    public LocalDateTime getBlockedEndTime(){
+         return this.blockedEndTime;
     }
 
 }

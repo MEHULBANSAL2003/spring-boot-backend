@@ -128,7 +128,7 @@ public class AuthServiceImpl implements AuthService {
         newUser.setCountryCode(pendingUser.getCountryCode());
         newUser.setHashedPassword(pendingUser.getPassword()); // ideally already hashed
         newUser.setEmail(pendingUser.getEmail());
-        newUser.setCurrStatus("ACTIVE");
+        newUser.setCurrStatus(UserDataEntity.userStatus.ACTIVE);
         newUser.setLastLogin(LocalDateTime.now());
         newUser.setHashedEmail(pendingUser.getEmail());
         newUser.setCountryCode("+91");
