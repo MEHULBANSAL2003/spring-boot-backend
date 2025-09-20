@@ -52,7 +52,7 @@ public class UserDataEntity {
     private int blockedCount;
     private LocalDateTime blockedStartTime;
     private LocalDateTime blockedEndTime;
-    private int blockForMin;
+    private long blockForMin;
 
 
     @CreationTimestamp
@@ -208,10 +208,10 @@ public class UserDataEntity {
         return this.blockedStartTime;
     }
 
-    public void setBlockForMin(int blockForMin){
+    public void setBlockForMin(long blockForMin){
           this.blockForMin = blockForMin;
     }
-    public  int getBlockForMin(){
+    public  long getBlockForMin(){
         return this.blockForMin;
     }
     public void setBlockedEndTime(LocalDateTime blockedEndTime){

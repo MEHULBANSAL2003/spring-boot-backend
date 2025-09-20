@@ -88,12 +88,17 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(error, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
-    @ExceptionHandler(IncorrectOtpLimitReachException.class)
+    @ExceptionHandler({IncorrectOtpLimitReachException.class})
     public ResponseEntity<CustomErrorMsgFormat> handlIncorrectOtpLimitException(IncorrectOtpLimitReachException ex, HttpServletRequest request) {
         CustomErrorMsgFormat error = new CustomErrorMsgFormat(HttpStatus.TOO_MANY_REQUESTS.getReasonPhrase(), ex.getMessage(), request.getRequestURI(), HttpStatus.TOO_MANY_REQUESTS.value());
         return new ResponseEntity<>(error,HttpStatus.TOO_MANY_REQUESTS);
     }
 
+    @ExceptionHandler(UserBlockedException.class)
+    public ResponseEntity<CustomErrorMsgFormat> handlBlockedUserException(UserBlockedException ex, HttpServletRequest request) {
+        CustomErrorMsgFormat error = new CustomErrorMsgFormat(HttpStatus.FORBIDDEN.getReasonPhrase(), ex.getMessage(), request.getRequestURI(), HttpStatus.FORBIDDEN.value());
+        return new ResponseEntity<>(error,HttpStatus.FORBIDDEN);
+    }
 
 
     //internal server error exception - 500

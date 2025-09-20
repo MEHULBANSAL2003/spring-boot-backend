@@ -18,6 +18,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 
 @Service
 public class AuthServiceImpl implements AuthService {
@@ -195,42 +196,68 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    @Transactional(dontRollbackOn = IncorrectPassword.class)
+    @Transactional(dontRollbackOn = {UserBlockedException.class, IncorrectPassword.class})
     public LoginByUserNamePasswordResponseDto loginUserByCredentials(String identifier, String password){
 
-        UserDataEntity user = userDataRepository.findByIdentifier(identifier).orElse(null);
+        UserDataEntity user = userDataRepository.findByIdentifier(identifier)
+                                                .orElseThrow(() -> new IdentifierNotFound("Invalid credentials.Please provide correct credentials"));
 
-        if(user == null){
-            throw new IdentifierNotFound("Invalid credentials.Please provide correct credentials");
+        if(user.getCurrStatus() == UserDataEntity.userStatus.BLOCKED){
+            throw new UserBlockedException("Your account has been disabled due to unusual activities.Please verify yourself for access your account.");
         }
+        if(user.getCurrStatus()== UserDataEntity.userStatus.TEMP_BLOCKED && user.getBlockedEndTime().isAfter(LocalDateTime.now())){
+            long timeLeft = ChronoUnit.MINUTES.between(LocalDateTime.now(),user.getBlockedEndTime());
+            throw new UserBlockedException(
+                    "Your account is temporarily blocked due to repeated incorrect attempts. " +
+                            "Please try again after " + timeLeft + " minute" + (timeLeft > 1 ? "s" : "") + "."
+            );
+        }
+
        boolean isPasswordCorrect =  passwordEncoder.matches(password, user.getHashedPassword());
 
-      if(user.getIncorrectAttempts()>5 && user.getIncorrectAttemptTimeWindowStart().plusMinutes(5).isAfter(LocalDateTime.now())){
-          int noOfTimesUserIsblocked = user.getBlockedCount();
-          if(noOfTimesUserIsblocked>5){
-              user.setBlockForMin(1440);
-              user.setBlockedStartTime(LocalDateTime.now());
-          }
-          else{
-              user.setBlockedCount(user.getBlockedCount()+1);
-              user.setBlockForMin(user.getBlockForMin()+30);
-              user.setBlockedStartTime(LocalDateTime.now());
-
-          }
-            throw new Error("");
-      }
-
-
         if(!isPasswordCorrect){
-             user.setIncorrectAttempts(user.getIncorrectAttempts()+1);
-             user.setIncorrectAttemptTimeWindowStart(LocalDateTime.now());
-            userDataRepository.save(user);
-            throw new IncorrectPassword("You have entered incorrect Password.");
+            if(user.getIncorrectAttempts()>=5 && user.getIncorrectAttemptTimeWindowStart().plusMinutes(10).isAfter(LocalDateTime.now())){
+                user.setBlockedCount(user.getBlockedCount()+1);
+                String message = "";
+                if(user.getBlockedCount()>=5){
+                    user.setCurrStatus(UserDataEntity.userStatus.BLOCKED);
+                    message = "Your account has been disabled due to unusual activities.Please verify yourself for access your account.";
+                }
+                else{
+                    user.setCurrStatus(UserDataEntity.userStatus.TEMP_BLOCKED);
+                    user.setBlockedStartTime(LocalDateTime.now());
+                    user.setBlockedEndTime(user.getBlockedStartTime().plusMinutes(10));
+                    user.setBlockForMin(ChronoUnit.MINUTES.between(user.getBlockedStartTime(),user.getBlockedEndTime()));
+                    message = "Your account is temporarily blocked due to repeated incorrect attempts.";
+                }
+                userDataRepository.save(user);
+                throw new UserBlockedException(message);
+            }
+            else{
+                if(user.getIncorrectAttempts()==5){
+                    user.setIncorrectAttempts(1);
+                }else {
+                    user.setIncorrectAttempts(user.getIncorrectAttempts() + 1);
+                }
+                if(user.getIncorrectAttempts()== 1){
+                    user.setIncorrectAttemptTimeWindowStart(LocalDateTime.now());
+                }
+                userDataRepository.save(user);
+                throw new IncorrectPassword("Invalid credentials.!Please enter correct credentials");
+            }
         }
 
-        // handle the case of no of times incorrect otp entered.. if entered 5 times incorrect in timespan of 5 min.. block for 30 minutes by curr state inactive for 30 min;
+           user.setCurrStatus(UserDataEntity.userStatus.ACTIVE);
+           user.setIncorrectAttempts(0);
+           user.setIncorrectAttemptTimeWindowStart(null);
+           user.setBlockForMin(0);
+           user.setBlockedStartTime(null);
+           user.setBlockedEndTime(null);
+           user.setLastLogin(LocalDateTime.now());
+           user.setBlockedCount(0);
 
-        LoginByUserNamePasswordResponseDto response = new LoginByUserNamePasswordResponseDto(
+         userDataRepository.save(user);
+           LoginByUserNamePasswordResponseDto response = new LoginByUserNamePasswordResponseDto(
                 "SUCCESS",
                 user.getUserId(),
                 user.getEmail(),
@@ -244,8 +271,6 @@ public class AuthServiceImpl implements AuthService {
                 user.getCreatedAt(),
                 user.getUpdatedAt()
         );
-
-        // generate jwt token..
 
         return response;
 
