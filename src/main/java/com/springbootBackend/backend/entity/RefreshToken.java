@@ -45,5 +45,17 @@ public class RefreshToken {
     @Column(nullable = false)
     private Instant expiresAt;
 
+    @Column(nullable = false)
     private boolean revoked = false;
+
+
+    public RefreshToken() {}
+
+    public RefreshToken(UserDataEntity user, String refresh_token, Instant issuedAt, Instant expiresAt) {
+        this.user = user;
+        this.refresh_token = refresh_token;
+        this.issuedAt = issuedAt;
+        this.expiresAt = expiresAt;
+        this.revoked = false;
+    }
 }
