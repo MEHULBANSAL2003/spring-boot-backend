@@ -323,6 +323,11 @@ public class AuthServiceImpl implements AuthService {
     if (dbToken.getExpiresAt().isBefore(Instant.now())) {
       throw new InvalidRefreshToken("Refresh token expired. Please login again");
     }
+
+    if (dbToken.isRevoked()) {
+      throw new InvalidRefreshToken("This refresh token has been revoked. Please login again.");
+    }
+
     UserDataEntity user = dbToken.getUser();
 
     refreshTokenRepository.delete(dbToken);
