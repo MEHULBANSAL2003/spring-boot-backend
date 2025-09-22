@@ -4,10 +4,12 @@ import com.springbootBackend.backend.dto.loginByUsernameAndPasswordDto.LoginByUs
 import com.springbootBackend.backend.dto.userEmailSignUpDto.EmailSignUpResponseDto;
 import com.springbootBackend.backend.dto.userMobileSignUpDto.MobileSignUpResponseDto;
 import com.springbootBackend.backend.dto.userMobileSignUpVerificationDto.UserMobileSignupVerificationResponseDto;
+import com.springbootBackend.backend.entity.RefreshToken;
 import com.springbootBackend.backend.entity.UserDataEntity;
 import com.springbootBackend.backend.entity.UserPendingVerification;
 import com.springbootBackend.backend.exceptions.customExceptions.*;
 import com.springbootBackend.backend.helper.OtpGenerator;
+import com.springbootBackend.backend.repository.RefreshTokenRepository;
 import com.springbootBackend.backend.repository.UserDataRepository;
 import com.springbootBackend.backend.repository.UserPendingVerificationRepository;
 import com.springbootBackend.backend.service.JwtService.JwtService;
@@ -15,11 +17,14 @@ import com.springbootBackend.backend.service.emailService.EmailService;
 import com.springbootBackend.backend.service.smsService.SmsService;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.Date;
 
 @Service
 public class AuthServiceImpl implements AuthService {
@@ -41,6 +46,12 @@ public class AuthServiceImpl implements AuthService {
 
     @Autowired
     JwtService jwtService;
+
+    @Autowired
+  RefreshTokenRepository refreshTokenRepository;
+
+  @Value("${jwt.refresh-token-exp-ms}")
+  private long refreshTokenExpiration;
 
 
     @Override
@@ -250,6 +261,12 @@ public class AuthServiceImpl implements AuthService {
                 throw new IncorrectPassword("Invalid credentials.!Please enter correct credentials");
             }
         }
+        String access_token =  jwtService.generateAccessToken(user.getUserId());
+        String refresh_token = jwtService.generateRefreshToken(user.getUserId());
+
+      RefreshToken refreshToken = new RefreshToken(user,refresh_token, Instant.now(),Instant.now());
+
+        refreshTokenRepository.save(refreshToken);
 
            user.setCurrStatus(UserDataEntity.userStatus.ACTIVE);
            user.setIncorrectAttempts(0);
@@ -259,9 +276,6 @@ public class AuthServiceImpl implements AuthService {
            user.setBlockedEndTime(null);
            user.setLastLogin(LocalDateTime.now());
            user.setBlockedCount(0);
-      String accessToken = jwtService.generateAccessToken(user.getUserId());
-      System.out.println("access token "+accessToken);
-
          userDataRepository.save(user);
            LoginByUserNamePasswordResponseDto response = new LoginByUserNamePasswordResponseDto(
                 "SUCCESS",
@@ -275,7 +289,9 @@ public class AuthServiceImpl implements AuthService {
                 user.getGender(),
                 user.getProfilePicUrl(),
                 user.getCreatedAt(),
-                user.getUpdatedAt()
+                user.getUpdatedAt(),
+                access_token,
+               refresh_token
         );
 
         return response;

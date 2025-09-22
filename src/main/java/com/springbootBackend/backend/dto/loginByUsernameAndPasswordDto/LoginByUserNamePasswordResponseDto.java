@@ -20,6 +20,8 @@ public class LoginByUserNamePasswordResponseDto {
     private String profile_pic;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    private String authToken;
+    private String refreshToken;
 
     public LoginByUserNamePasswordResponseDto() {
     }
@@ -28,7 +30,7 @@ public class LoginByUserNamePasswordResponseDto {
     public LoginByUserNamePasswordResponseDto(String status, Long userId, String email, String userName,
                                               String countryCode, String phoneNumber, Integer age, LocalDate dob,
                                               UserDataEntity.Gender gender, String profile_pic, LocalDateTime createdAt,
-                                              LocalDateTime updatedAt) {
+                                              LocalDateTime updatedAt,String authToken, String refreshToken) {
         this.status = status;
         this.userId = userId;
         this.email = email;
@@ -41,6 +43,9 @@ public class LoginByUserNamePasswordResponseDto {
         this.profile_pic = profile_pic;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
+        this.authToken= authToken;
+        this.refreshToken = refreshToken;
+
     }
 
 
@@ -138,6 +143,19 @@ public class LoginByUserNamePasswordResponseDto {
 
     public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    public void setAuth_token(String authToken){
+      this.authToken = authToken;
+    }
+    public String getAuthToken(){
+      return this.authToken;
+    }
+    public void setRefreshToken(String refreshToken){
+      this.refreshToken = refreshToken;
+    }
+    public String getRefreshToken(){
+      return this.refreshToken;
     }
 
 
