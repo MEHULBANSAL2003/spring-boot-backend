@@ -71,7 +71,7 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(error,HttpStatus.CONFLICT);
     }
 
-    @ExceptionHandler({IdentifierNotFound.class,IncorrectPassword.class})
+    @ExceptionHandler({IdentifierNotFound.class,IncorrectPassword.class,InvalidRefreshToken.class})
     public ResponseEntity<CustomErrorMsgFormat> handleIdentifierNotFoundException(Exception ex, HttpServletRequest request){
         CustomErrorMsgFormat error = new CustomErrorMsgFormat(HttpStatus.UNAUTHORIZED.getReasonPhrase(),ex.getMessage(), request.getRequestURI(), HttpStatus.UNAUTHORIZED.value());
         return new ResponseEntity<>(error, HttpStatus.UNAUTHORIZED);

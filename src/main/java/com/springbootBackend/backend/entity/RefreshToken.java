@@ -47,4 +47,54 @@ public class RefreshToken {
         this.expiresAt = expiresAt;
         this.revoked = false;
     }
+
+  public Long getId() {
+    return id;
+  }
+
+  public void setId(Long id) {
+    this.id = id;
+  }
+
+  public UserDataEntity getUser() {
+    return user;
+  }
+
+  public void setUser(UserDataEntity user) {
+    this.user = user;
+  }
+
+  public String getRefreshToken() {
+    return refreshToken;
+  }
+
+  public void setRefreshToken(String refreshToken) {
+    this.refreshToken = refreshToken;
+  }
+
+  public Instant getIssuedAt() {
+    return issuedAt;
+  }
+
+  public void setIssuedAt(Instant issuedAt) {
+    this.issuedAt = issuedAt;
+  }
+
+  public Instant getExpiresAt() {
+    return expiresAt;
+  }
+
+  public void setExpiresAt(Instant expiresAt) {
+    this.expiresAt = expiresAt;
+  }
+
+  public boolean isRevoked() {
+    return revoked;
+  }
+
+  public void setRevoked(boolean revoked) {
+    this.revoked = revoked;
+  }
+
+
 }

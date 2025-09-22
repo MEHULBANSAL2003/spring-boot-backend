@@ -1,5 +1,6 @@
 package com.springbootBackend.backend.service.AuthControllerService;
 
+import com.springbootBackend.backend.dto.getNewTokenFromRefreshTokenDto.NewAccessTokenFromRefreshTokenResponseDto;
 import com.springbootBackend.backend.dto.loginByUsernameAndPasswordDto.LoginByUserNamePasswordResponseDto;
 import com.springbootBackend.backend.dto.userEmailSignUpDto.EmailSignUpResponseDto;
 import com.springbootBackend.backend.dto.userMobileSignUpDto.MobileSignUpResponseDto;
@@ -16,4 +17,6 @@ public interface AuthService {
     public EmailSignUpResponseDto emailSignupGetOtp(String email, String userName, String password);
 
     public LoginByUserNamePasswordResponseDto loginUserByCredentials(String identifier, String password, HttpServletRequest request);
+
+    public NewAccessTokenFromRefreshTokenResponseDto generateAccessTokenFromRefreshToken(String refreshToken);
 }

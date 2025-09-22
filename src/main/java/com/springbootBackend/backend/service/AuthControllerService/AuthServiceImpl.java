@@ -1,5 +1,6 @@
 package com.springbootBackend.backend.service.AuthControllerService;
 
+import com.springbootBackend.backend.dto.getNewTokenFromRefreshTokenDto.NewAccessTokenFromRefreshTokenResponseDto;
 import com.springbootBackend.backend.dto.loginByUsernameAndPasswordDto.LoginByUserNamePasswordResponseDto;
 import com.springbootBackend.backend.dto.userEmailSignUpDto.EmailSignUpResponseDto;
 import com.springbootBackend.backend.dto.userMobileSignUpDto.MobileSignUpResponseDto;
@@ -301,4 +302,46 @@ public class AuthServiceImpl implements AuthService {
         return response;
 
     }
+
+
+  @Override
+  @Transactional
+  public NewAccessTokenFromRefreshTokenResponseDto generateAccessTokenFromRefreshToken(String oldRefreshToken){
+
+    if (!jwtService.validateToken(oldRefreshToken)) {
+      throw new InvalidRefreshToken("Invalid or expired refresh token");
+    }
+
+    String tokenType = jwtService.getTokenType(oldRefreshToken);
+    if (!"REFRESH".equals(tokenType)) {
+      throw new InvalidRefreshToken("Invalid token type");
+    }
+
+    RefreshToken dbToken = refreshTokenRepository.findByRefreshToken(oldRefreshToken)
+      .orElseThrow(() -> new InvalidRefreshToken("Refresh token not found"));
+
+    if (dbToken.getExpiresAt().isBefore(Instant.now())) {
+      throw new InvalidRefreshToken("Refresh token expired. Please login again");
+    }
+    UserDataEntity user = dbToken.getUser();
+
+    refreshTokenRepository.delete(dbToken);
+
+    String newAccessToken = jwtService.generateAccessToken(user.getUserId());
+    String newRefreshToken = jwtService.generateRefreshToken(user.getUserId());
+
+    RefreshToken newDbToken = new RefreshToken(
+      user,
+      newRefreshToken,
+      Instant.now(),
+      Instant.now().plus(7, ChronoUnit.DAYS)
+    );
+    refreshTokenRepository.save(newDbToken);
+
+
+      NewAccessTokenFromRefreshTokenResponseDto response = new NewAccessTokenFromRefreshTokenResponseDto("SUCCESS", "tokens generated successfully", newAccessToken,newRefreshToken);
+
+      return response;
+  }
+
 }
