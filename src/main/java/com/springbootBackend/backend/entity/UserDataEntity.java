@@ -44,6 +44,8 @@ public class UserDataEntity {
     private userStatus currStatus=userStatus.ACTIVE;
 
     private LocalDateTime lastLogin;
+  private String ipAddress;
+  private String userAgent;
 
 
     // blocked use case
@@ -219,6 +221,20 @@ public class UserDataEntity {
     }
     public LocalDateTime getBlockedEndTime(){
          return this.blockedEndTime;
+    }
+
+    public void setIpAddress(String ipAddress){
+      this.ipAddress = ipAddress;
+    }
+    public String getIpAddress(){
+      return this.ipAddress;
+    }
+
+    public void setUserAgent(String userAgent){
+      this.userAgent = userAgent;
+    }
+    public String getUserAgent(){
+      return this.userAgent;
     }
 
 }

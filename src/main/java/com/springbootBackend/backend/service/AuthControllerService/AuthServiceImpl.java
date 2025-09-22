@@ -8,6 +8,7 @@ import com.springbootBackend.backend.entity.RefreshToken;
 import com.springbootBackend.backend.entity.UserDataEntity;
 import com.springbootBackend.backend.entity.UserPendingVerification;
 import com.springbootBackend.backend.exceptions.customExceptions.*;
+import com.springbootBackend.backend.helper.ExtractClientIp;
 import com.springbootBackend.backend.helper.OtpGenerator;
 import com.springbootBackend.backend.repository.RefreshTokenRepository;
 import com.springbootBackend.backend.repository.UserDataRepository;
@@ -15,6 +16,7 @@ import com.springbootBackend.backend.repository.UserPendingVerificationRepositor
 import com.springbootBackend.backend.service.JwtService.JwtService;
 import com.springbootBackend.backend.service.emailService.EmailService;
 import com.springbootBackend.backend.service.smsService.SmsService;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -212,7 +214,7 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     @Transactional(dontRollbackOn = {UserBlockedException.class, IncorrectPassword.class})
-    public LoginByUserNamePasswordResponseDto loginUserByCredentials(String identifier, String password){
+    public LoginByUserNamePasswordResponseDto loginUserByCredentials(String identifier, String password, HttpServletRequest request){
 
         UserDataEntity user = userDataRepository.findByIdentifier(identifier)
                                                 .orElseThrow(() -> new IdentifierNotFound("Invalid credentials.Please provide correct credentials"));
@@ -264,7 +266,7 @@ public class AuthServiceImpl implements AuthService {
         String access_token =  jwtService.generateAccessToken(user.getUserId());
         String refresh_token = jwtService.generateRefreshToken(user.getUserId());
 
-      RefreshToken refreshToken = new RefreshToken(user,refresh_token, Instant.now(),Instant.now());
+      RefreshToken refreshToken = new RefreshToken(user,refresh_token, Instant.now(), Instant.now().plus(7,ChronoUnit.DAYS));
 
            user.setCurrStatus(UserDataEntity.userStatus.ACTIVE);
            user.setIncorrectAttempts(0);
@@ -274,8 +276,11 @@ public class AuthServiceImpl implements AuthService {
            user.setBlockedEndTime(null);
            user.setLastLogin(LocalDateTime.now());
            user.setBlockedCount(0);
-         userDataRepository.save(user);
-      refreshTokenRepository.save(refreshToken);
+           user.setIpAddress(ExtractClientIp.extractClientIp(request));
+           user.setUserAgent(request.getHeader("User-Agent"));
+
+          userDataRepository.save(user);
+         refreshTokenRepository.save(refreshToken);
            LoginByUserNamePasswordResponseDto response = new LoginByUserNamePasswordResponseDto(
                 "SUCCESS",
                 user.getUserId(),

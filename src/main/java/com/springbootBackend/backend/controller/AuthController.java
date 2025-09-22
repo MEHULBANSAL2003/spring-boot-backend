@@ -10,6 +10,7 @@ import com.springbootBackend.backend.dto.userMobileSignUpDto.MobileSignUpRespons
 import com.springbootBackend.backend.dto.userMobileSignUpVerificationDto.UserMobileSignupVerificationRequestDto;
 import com.springbootBackend.backend.dto.userMobileSignUpVerificationDto.UserMobileSignupVerificationResponseDto;
 import com.springbootBackend.backend.service.AuthControllerService.AuthServiceImpl;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -49,14 +50,9 @@ public class AuthController {
     }
 
     @PostMapping(ApiConstants.LOGIN_BY_IDENTIFIER)
-    public ResponseEntity<LoginByUserNamePasswordResponseDto> loginUserByCredentials(@Valid @RequestBody LoginByUserNamePasswordRequestDto requestDto){
-        LoginByUserNamePasswordResponseDto response = authService.loginUserByCredentials(requestDto.getIdentifier(), requestDto.getPassword());
+    public ResponseEntity<LoginByUserNamePasswordResponseDto> loginUserByCredentials(@Valid @RequestBody LoginByUserNamePasswordRequestDto requestDto, HttpServletRequest request){
+        LoginByUserNamePasswordResponseDto response = authService.loginUserByCredentials(requestDto.getIdentifier(), requestDto.getPassword(), request);
         return new ResponseEntity<>(response, HttpStatus.OK);
-    }
-
-    @PostMapping("/user")
-  public String Hello(){
-      return "hellop";
     }
 
 //    @PostMapping("/create/bulk/users")

@@ -28,18 +28,6 @@ public class RefreshToken {
     @Column(name="refresh_token",nullable = false, unique = true, length = 500)
     private String refreshToken;
 
-
-    // Metadata
-    @Column(name = "device_info")
-    private String deviceInfo;
-
-    @Column(name = "ip_address", length = 45)
-    private String ipAddress;
-
-    @Column(name = "user_agent", length = 1000)
-    private String userAgent;
-
-    // Timestamps
     @Column(nullable = false)
     private Instant issuedAt;
 

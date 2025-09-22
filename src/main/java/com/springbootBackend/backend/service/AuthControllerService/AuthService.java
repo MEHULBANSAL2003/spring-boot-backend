@@ -4,6 +4,7 @@ import com.springbootBackend.backend.dto.loginByUsernameAndPasswordDto.LoginByUs
 import com.springbootBackend.backend.dto.userEmailSignUpDto.EmailSignUpResponseDto;
 import com.springbootBackend.backend.dto.userMobileSignUpDto.MobileSignUpResponseDto;
 import com.springbootBackend.backend.dto.userMobileSignUpVerificationDto.UserMobileSignupVerificationResponseDto;
+import jakarta.servlet.http.HttpServletRequest;
 
 
 public interface AuthService {
@@ -14,5 +15,5 @@ public interface AuthService {
 
     public EmailSignUpResponseDto emailSignupGetOtp(String email, String userName, String password);
 
-    public LoginByUserNamePasswordResponseDto loginUserByCredentials(String identifier, String password);
+    public LoginByUserNamePasswordResponseDto loginUserByCredentials(String identifier, String password, HttpServletRequest request);
 }
