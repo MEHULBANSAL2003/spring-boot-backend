@@ -31,6 +31,7 @@ public class JwtService {
   public String generateAccessToken(Long userId) {
     return Jwts.builder()
       .claim("userId", userId)
+      .claim("token_type", "ACCESS")
       .setIssuedAt(new Date())
       .setExpiration(new Date(System.currentTimeMillis() + accessTokenExpiration))
       .signWith(getSigningKey(), SignatureAlgorithm.HS256)
@@ -40,6 +41,7 @@ public class JwtService {
   public String generateRefreshToken(Long userId) {
     return Jwts.builder()
       .claim("userId", userId)
+      .claim("token_type", "REFRESH")
       .setIssuedAt(new Date())
       .setExpiration(new Date(System.currentTimeMillis() + refreshTokenExpiration))
       .signWith(getSigningKey(), SignatureAlgorithm.HS256)
@@ -65,5 +67,15 @@ public class JwtService {
       .parseClaimsJws(token)
       .getBody();
     return claims.get("userId", Long.class);
+  }
+
+  public String getTokenType(String token) {
+    Claims claims = Jwts.parserBuilder()
+      .setSigningKey(getSigningKey())
+      .build()
+      .parseClaimsJws(token)
+      .getBody();
+
+    return claims.get("token_type", String.class);
   }
 }

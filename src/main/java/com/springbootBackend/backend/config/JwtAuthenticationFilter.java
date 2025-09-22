@@ -35,10 +35,18 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
       String token = authHeader.substring(7);
 
+
+
       if (!jwtService.validateToken(token)) {
         response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid or expired token");
         return;
       }
+
+    String tokenType = jwtService.getTokenType(token);
+    if (!"ACCESS".equals(tokenType)) {
+      response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Refresh token cannot access this route");
+      return;
+    }
 
       if (jwtService.validateToken(token)) {
         Long userId = jwtService.getUserIdFromToken(token);
