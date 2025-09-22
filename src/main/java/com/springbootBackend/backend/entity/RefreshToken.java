@@ -25,8 +25,9 @@ public class RefreshToken {
     @JoinColumn(name = "user_id", nullable = false)
     private UserDataEntity user;
 
-    @Column(nullable = false, unique = true, length = 500)
-    private String refresh_token;
+    @Column(name="refresh_token",nullable = false, unique = true, length = 500)
+    private String refreshToken;
+
 
     // Metadata
     @Column(name = "device_info")
@@ -51,9 +52,9 @@ public class RefreshToken {
 
     public RefreshToken() {}
 
-    public RefreshToken(UserDataEntity user, String refresh_token, Instant issuedAt, Instant expiresAt) {
+    public RefreshToken(UserDataEntity user, String refreshToken, Instant issuedAt, Instant expiresAt) {
         this.user = user;
-        this.refresh_token = refresh_token;
+        this.refreshToken = refreshToken;
         this.issuedAt = issuedAt;
         this.expiresAt = expiresAt;
         this.revoked = false;

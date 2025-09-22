@@ -10,6 +10,7 @@ import com.springbootBackend.backend.exceptions.customExceptions.*;
 import com.springbootBackend.backend.helper.OtpGenerator;
 import com.springbootBackend.backend.repository.UserDataRepository;
 import com.springbootBackend.backend.repository.UserPendingVerificationRepository;
+import com.springbootBackend.backend.service.JwtService.JwtService;
 import com.springbootBackend.backend.service.emailService.EmailService;
 import com.springbootBackend.backend.service.smsService.SmsService;
 import jakarta.transaction.Transactional;
@@ -37,6 +38,9 @@ public class AuthServiceImpl implements AuthService {
 
     @Autowired
     private EmailService emailService;
+
+    @Autowired
+    JwtService jwtService;
 
 
     @Override
@@ -255,6 +259,8 @@ public class AuthServiceImpl implements AuthService {
            user.setBlockedEndTime(null);
            user.setLastLogin(LocalDateTime.now());
            user.setBlockedCount(0);
+      String accessToken = jwtService.generateAccessToken(user.getUserId());
+      System.out.println("access token "+accessToken);
 
          userDataRepository.save(user);
            LoginByUserNamePasswordResponseDto response = new LoginByUserNamePasswordResponseDto(

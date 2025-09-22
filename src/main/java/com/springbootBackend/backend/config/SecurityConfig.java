@@ -15,6 +15,12 @@
     @Configuration
     public class SecurityConfig {
 
+      private final JwtAuthenticationFilter jwtAuthenticationFilter;
+
+      public SecurityConfig(JwtAuthenticationFilter jwtAuthenticationFilter) {
+        this.jwtAuthenticationFilter = jwtAuthenticationFilter;
+      }
+
         @Bean
         public PasswordEncoder  passwordEncoder(){
             return new BCryptPasswordEncoder(12);
@@ -26,10 +32,11 @@
                     .csrf(csrf -> csrf.disable())
                     .authorizeHttpRequests(auth -> auth
                             .requestMatchers("/api/auth/**").permitAll()
-                            .requestMatchers("/api/**").authenticated()
                             .anyRequest().authenticated()
                     )
-                    .httpBasic(withDefaults());
-            return http.build();
+              .addFilterBefore(jwtAuthenticationFilter, org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter.class)
+              .httpBasic(httpBasic -> httpBasic.disable());     // disable HTTP Basic
+
+          return http.build();
         }
     }
