@@ -30,7 +30,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     if (authHeader != null && authHeader.startsWith("Bearer ")) {
       String token = authHeader.substring(7);
 
-      if (jwtService.validateToken(token)) {
+      if (!jwtService.validateToken(token)) {
+        response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid or expired token");
+        return;
+      }
         Long userId = jwtService.getUserIdFromToken(token);
 
         // Here we create an authentication object without UserDetails
@@ -40,7 +43,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
-      }
+
     }
 
     filterChain.doFilter(request, response);
