@@ -34,6 +34,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid or expired token");
         return;
       }
+
+      if (jwtService.validateToken(token)) {
         Long userId = jwtService.getUserIdFromToken(token);
 
         // Here we create an authentication object without UserDetails
@@ -43,7 +45,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
-
+      }
     }
 
     filterChain.doFilter(request, response);

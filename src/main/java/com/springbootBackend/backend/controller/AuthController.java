@@ -54,6 +54,11 @@ public class AuthController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
+    @PostMapping("/user")
+  public String Hello(){
+      return "hellop";
+    }
+
 //    @PostMapping("/create/bulk/users")
 //    public void createBulkUsers() {
 //
