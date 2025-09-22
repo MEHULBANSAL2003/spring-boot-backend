@@ -1,6 +1,7 @@
     package com.springbootBackend.backend.config;
 
 
+    import com.springbootBackend.backend.exceptions.CustomAuthEntryPoint;
     import org.springframework.context.annotation.Bean;
     import org.springframework.context.annotation.Configuration;
 
@@ -16,9 +17,12 @@
     public class SecurityConfig {
 
       private final JwtAuthenticationFilter jwtAuthenticationFilter;
+      private final CustomAuthEntryPoint customAuthEntryPoint;
 
-      public SecurityConfig(JwtAuthenticationFilter jwtAuthenticationFilter) {
+      public SecurityConfig(JwtAuthenticationFilter jwtAuthenticationFilter,
+                            CustomAuthEntryPoint customAuthEntryPoint) {
         this.jwtAuthenticationFilter = jwtAuthenticationFilter;
+        this.customAuthEntryPoint = customAuthEntryPoint;
       }
 
         @Bean
@@ -34,6 +38,9 @@
                             .requestMatchers("/api/auth/**").permitAll()
                             .anyRequest().authenticated()
                     )
+              .exceptionHandling(ex -> ex
+                .authenticationEntryPoint(customAuthEntryPoint) // 👈 force 401 here
+              )
               .addFilterBefore(jwtAuthenticationFilter, org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter.class)
               .httpBasic(httpBasic -> httpBasic.disable());     // disable HTTP Basic
 
