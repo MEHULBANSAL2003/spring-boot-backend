@@ -266,8 +266,6 @@ public class AuthServiceImpl implements AuthService {
 
       RefreshToken refreshToken = new RefreshToken(user,refresh_token, Instant.now(),Instant.now());
 
-        refreshTokenRepository.save(refreshToken);
-
            user.setCurrStatus(UserDataEntity.userStatus.ACTIVE);
            user.setIncorrectAttempts(0);
            user.setIncorrectAttemptTimeWindowStart(null);
@@ -277,6 +275,7 @@ public class AuthServiceImpl implements AuthService {
            user.setLastLogin(LocalDateTime.now());
            user.setBlockedCount(0);
          userDataRepository.save(user);
+      refreshTokenRepository.save(refreshToken);
            LoginByUserNamePasswordResponseDto response = new LoginByUserNamePasswordResponseDto(
                 "SUCCESS",
                 user.getUserId(),
