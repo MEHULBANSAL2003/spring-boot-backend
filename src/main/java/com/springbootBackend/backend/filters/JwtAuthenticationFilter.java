@@ -1,4 +1,4 @@
-package com.springbootBackend.backend.config;
+package com.springbootBackend.backend.filters;
 
 import com.springbootBackend.backend.service.JwtService.JwtService;
 import jakarta.servlet.FilterChain;
