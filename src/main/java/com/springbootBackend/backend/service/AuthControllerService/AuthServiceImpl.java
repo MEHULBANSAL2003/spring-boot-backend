@@ -365,20 +365,21 @@ public class AuthServiceImpl implements AuthService {
        ResetPasswordResponseDto response = new ResetPasswordResponseDto();
        int otp = new OtpGenerator().generateOtp();
 
+    ResetPassword pendingUser = resetPasswordRepository.findByUserName(user.getUserName()).orElse(new ResetPassword());
+
       if(sendOtpTo.equals("email") || (sendOtpTo.isEmpty() && user.getEmail()!=null)){
         try {
           emailService.sendResetPasswordOtp(parameter, String.valueOf(otp));
         } catch (Exception e) {
           throw new IncorrectOtpException("Error sending sms. Please try again later");
         }
-        ResetPassword resetPassword = new ResetPassword();
-        resetPassword.setEmail(parameter);
-        resetPassword.setOtp(String.valueOf(otp));
-        resetPassword.setOtpExpiryTime(LocalDateTime.now().plusMinutes(10));
-        resetPassword.setUserName(user.getUserName());
+        pendingUser.setEmail(parameter);
+        pendingUser.setOtp(String.valueOf(otp));
+        pendingUser.setOtpExpiryTime(LocalDateTime.now().plusMinutes(10));
+        pendingUser.setUserName(user.getUserName());
         response.setStatus("success");
         response.setMessage("Otp has been sent to your registered email");
-        resetPasswordRepository.save(resetPassword);
+        resetPasswordRepository.save(pendingUser);
       }
       else {
         String number = "+91"+user.getPhoneNumber();
@@ -386,14 +387,13 @@ public class AuthServiceImpl implements AuthService {
         if(!smsSent){
           throw new IncorrectOtpException("Error sending sms. Please try again later");
         }
-        ResetPassword resetPassword = new ResetPassword();
-        resetPassword.setPhoneNumber(parameter);
-        resetPassword.setOtp(String.valueOf(otp));
-        resetPassword.setOtpExpiryTime(LocalDateTime.now().plusMinutes(10));
-        resetPassword.setUserName(user.getUserName());
+        pendingUser.setPhoneNumber(parameter);
+        pendingUser.setOtp(String.valueOf(otp));
+        pendingUser.setOtpExpiryTime(LocalDateTime.now().plusMinutes(10));
+        pendingUser.setUserName(user.getUserName());
         response.setStatus("success");
         response.setMessage("Otp has been sent to your registered phoneNumber");
-        resetPasswordRepository.save(resetPassword);
+        resetPasswordRepository.save(pendingUser);
       }
 
       return response;
