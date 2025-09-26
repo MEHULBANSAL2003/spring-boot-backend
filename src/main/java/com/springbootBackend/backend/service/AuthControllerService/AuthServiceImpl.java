@@ -381,7 +381,7 @@ public class AuthServiceImpl implements AuthService {
         resetPasswordRepository.save(resetPassword);
       }
       else {
-        String number = "+91"+parameter;
+        String number = "+91"+user.getPhoneNumber();
         boolean smsSent = smsService.sendSms(number,String.valueOf(otp));
         if(!smsSent){
           throw new IncorrectOtpException("Error sending sms. Please try again later");
