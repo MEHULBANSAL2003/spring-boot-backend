@@ -373,7 +373,7 @@ public class AuthServiceImpl implements AuthService {
         } catch (Exception e) {
           throw new IncorrectOtpException("Error sending sms. Please try again later");
         }
-        pendingUser.setEmail(parameter);
+        pendingUser.setEmail(user.getEmail());
         pendingUser.setOtp(String.valueOf(otp));
         pendingUser.setOtpExpiryTime(LocalDateTime.now().plusMinutes(10));
         pendingUser.setUserName(user.getUserName());
@@ -383,11 +383,11 @@ public class AuthServiceImpl implements AuthService {
       }
       else {
         String number = "+91"+user.getPhoneNumber();
-        boolean smsSent = smsService.sendSms(number,String.valueOf(otp));
+        boolean smsSent = smsService.sendResetPassworSms(number,String.valueOf(otp));
         if(!smsSent){
           throw new IncorrectOtpException("Error sending sms. Please try again later");
         }
-        pendingUser.setPhoneNumber(parameter);
+        pendingUser.setPhoneNumber(user.getPhoneNumber());
         pendingUser.setOtp(String.valueOf(otp));
         pendingUser.setOtpExpiryTime(LocalDateTime.now().plusMinutes(10));
         pendingUser.setUserName(user.getUserName());
