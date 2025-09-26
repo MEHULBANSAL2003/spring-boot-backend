@@ -379,8 +379,10 @@ public class AuthServiceImpl implements AuthService {
         pendingUser.setOtp(String.valueOf(otp));
         pendingUser.setOtpExpiryTime(LocalDateTime.now().plusMinutes(10));
         pendingUser.setUserName(user.getUserName());
+        pendingUser.setOtpVerifiedBy(ResetPassword.OtpVerifiedBy.EMAIL);
         response.setStatus("success");
         response.setMessage("Otp has been sent to your registered email");
+
         resetPasswordRepository.save(pendingUser);
       }
       else {
@@ -393,6 +395,7 @@ public class AuthServiceImpl implements AuthService {
         pendingUser.setOtp(String.valueOf(otp));
         pendingUser.setOtpExpiryTime(LocalDateTime.now().plusMinutes(10));
         pendingUser.setUserName(user.getUserName());
+        pendingUser.setOtpVerifiedBy(ResetPassword.OtpVerifiedBy.PHONE);
         response.setStatus("success");
         response.setMessage("Otp has been sent to your registered phoneNumber");
         resetPasswordRepository.save(pendingUser);
@@ -416,7 +419,6 @@ public class AuthServiceImpl implements AuthService {
       response.setStatus("success");
       response.setMessage("Otp verified successfully");
       resetPasswordEntry.setOtpVerified(true);
-      resetPasswordEntry.setOtpVerifiedBy(ResetPassword.OtpVerifiedBy.PHONE);
       resetPasswordRepository.save(resetPasswordEntry);
 
       return response;
@@ -446,6 +448,7 @@ public class AuthServiceImpl implements AuthService {
 
 
       userDataRepository.save(user);
+      resetPasswordRepository.delete(resetPassword);
       ResetPasswordFinalResponseDto response = new ResetPasswordFinalResponseDto();
        response.setStatus("success");
        response.setMessage("password changed successfully");
