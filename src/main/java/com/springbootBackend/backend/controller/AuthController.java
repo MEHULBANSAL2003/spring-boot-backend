@@ -84,8 +84,21 @@ public class AuthController {
            if(requestDto.getEmail()==null && requestDto.getPhoneNumber()==null && requestDto.getUserName()==null){
                 throw new InvalidRefreshToken("Please provide any one parameter");
            }
+           String parameter = "";
+           String sendOtpTo = "";
+           if(requestDto.getUserName()!=null){
+             parameter = requestDto.getUserName();
+           }
+           else if(requestDto.getEmail()!=null){
+             parameter  =requestDto.getEmail();
+             sendOtpTo = "email";
+           }
+           else{
+             parameter = requestDto.getPhoneNumber();
+             sendOtpTo = "phone";
+           }
 
-       ResetPasswordResponseDto response = authService.resetUserPassword(requestDto.getEmail());
+       ResetPasswordResponseDto response = authService.resetUserPassword(parameter, sendOtpTo);
       return new ResponseEntity<>(response, HttpStatus.OK);
     }
 

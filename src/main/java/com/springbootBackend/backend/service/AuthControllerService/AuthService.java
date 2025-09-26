@@ -21,5 +21,5 @@ public interface AuthService {
 
     public NewAccessTokenFromRefreshTokenResponseDto generateAccessTokenFromRefreshToken(String refreshToken);
 
-    public ResetPasswordResponseDto  resetUserPassword(String parameter);
+    public ResetPasswordResponseDto  resetUserPassword(String parameter, String sendOtpTo);
 }

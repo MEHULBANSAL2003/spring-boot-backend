@@ -358,17 +358,14 @@ public class AuthServiceImpl implements AuthService {
 
   @Override
   @Transactional
-  public ResetPasswordResponseDto resetUserPassword(String parameter){
+  public ResetPasswordResponseDto resetUserPassword(String parameter, String sendOtpTo){
 
       UserDataEntity user = userDataRepository.findByIdentifier(parameter).orElseThrow(() -> new IdentifierNotFound("Invalid credentials.Please provide correct credentials"));
 
-      boolean paramIsPhoneNumber = AuthServiceHelper.isPhoneNumber(parameter);
-      boolean paramIsEmail = AuthServiceHelper.isEmail(parameter);
+       ResetPasswordResponseDto response = new ResetPasswordResponseDto();
+       int otp = new OtpGenerator().generateOtp();
 
-    ResetPasswordResponseDto response = new ResetPasswordResponseDto();
-    int otp = new OtpGenerator().generateOtp();
-
-      if(paramIsEmail || (!paramIsPhoneNumber && user.getEmail()!=null)){
+      if(sendOtpTo.equals("email") || (sendOtpTo.isEmpty() && user.getEmail()!=null)){
         try {
           emailService.sendResetPasswordOtp(parameter, String.valueOf(otp));
         } catch (Exception e) {
