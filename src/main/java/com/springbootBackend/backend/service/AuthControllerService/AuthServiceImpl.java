@@ -360,7 +360,7 @@ public class AuthServiceImpl implements AuthService {
   @Transactional
   public ResetPasswordResponseDto resetUserPassword(String parameter, String sendOtpTo){
 
-      UserDataEntity user = userDataRepository.findByIdentifier(parameter).orElseThrow(() -> new IdentifierNotFound("Invalid credentials.Please provide correct credentials"));
+      UserDataEntity user = userDataRepository.findByIdentifier(parameter).orElseThrow(() -> new IdentifierNotFound("Credentials not registered.Please provide correct credentials"));
 
        ResetPasswordResponseDto response = new ResetPasswordResponseDto();
        int otp = new OtpGenerator().generateOtp();
