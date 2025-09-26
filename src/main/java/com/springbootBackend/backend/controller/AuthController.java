@@ -1,6 +1,8 @@
 package com.springbootBackend.backend.controller;
 
 import com.springbootBackend.backend.constants.ApiConstants;
+import com.springbootBackend.backend.dto.ResetPassword.ResetPasswordRequestDto;
+import com.springbootBackend.backend.dto.ResetPassword.ResetPasswordResponseDto;
 import com.springbootBackend.backend.dto.getNewTokenFromRefreshTokenDto.NewAccessTokenFromRefreshTokenResponseDto;
 import com.springbootBackend.backend.dto.loginByUsernameAndPasswordDto.LoginByUserNamePasswordRequestDto;
 import com.springbootBackend.backend.dto.loginByUsernameAndPasswordDto.LoginByUserNamePasswordResponseDto;
@@ -10,6 +12,7 @@ import com.springbootBackend.backend.dto.userMobileSignUpDto.MobileSignUpRequest
 import com.springbootBackend.backend.dto.userMobileSignUpDto.MobileSignUpResponseDto;
 import com.springbootBackend.backend.dto.userMobileSignUpVerificationDto.UserMobileSignupVerificationRequestDto;
 import com.springbootBackend.backend.dto.userMobileSignUpVerificationDto.UserMobileSignupVerificationResponseDto;
+import com.springbootBackend.backend.exceptions.customExceptions.InvalidRefreshToken;
 import com.springbootBackend.backend.service.AuthControllerService.AuthServiceImpl;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -59,7 +62,7 @@ public class AuthController {
     }
 
     @PostMapping(ApiConstants.GENERATE_NEW_ACCESS_TOKEN)
-  public  ResponseEntity<NewAccessTokenFromRefreshTokenResponseDto> generateNewAccessTokenFromRefreshToken(@RequestBody Map<String, String> requestBody){
+  public ResponseEntity<NewAccessTokenFromRefreshTokenResponseDto> generateNewAccessTokenFromRefreshToken(@RequestBody Map<String, String> requestBody){
 
       String refreshToken = requestBody.get("refreshToken");
       if (refreshToken == null || refreshToken.isEmpty()) {
@@ -73,5 +76,18 @@ public class AuthController {
       return new ResponseEntity<>(response, HttpStatus.OK);
 
     }
+
+
+    @PostMapping(ApiConstants.USER_RESET_PASSWORD)
+  public ResponseEntity<ResetPasswordResponseDto> resetUserPassword(@Valid @RequestBody ResetPasswordRequestDto requestDto){
+
+           if(requestDto.getEmail()==null && requestDto.getPhoneNumber()==null && requestDto.getUserName()==null){
+                throw new InvalidRefreshToken("Please provide any one parameter");
+           }
+
+       ResetPasswordResponseDto response = authService.resetUserPassword(requestDto.getEmail());
+      return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
 
 }

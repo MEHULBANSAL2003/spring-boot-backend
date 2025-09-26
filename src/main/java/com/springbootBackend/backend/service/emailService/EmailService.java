@@ -48,6 +48,31 @@ public class EmailService {
         }
     }
 
+  public void sendResetPasswordOtp(String toEmail, String otp) {
+    Email from = new Email(fromEmail);
+    String subject = "Your OTP Code";
+    Email to = new Email(toEmail);
+    Content content = new Content("text/plain", "Your Otp code for reset password is: " + otp + ". Please enter this otp to change the password.(Valid only for 10 minutes)");
+    Mail mail = new Mail(from, subject, to, content);
+
+    SendGrid sg = new SendGrid(sendGridApiKey);
+    Request request = new Request();
+
+    try {
+      request.setMethod(Method.POST);
+      request.setEndpoint("mail/send");
+      request.setBody(mail.build());
+
+      Response response = sg.api(request);
+      if (response.getStatusCode() >= 400) {
+        throw new RuntimeException("Failed to send OTP email: " + response.getBody());
+      }
+
+    } catch (IOException ex) {
+      throw new RuntimeException("Error sending OTP email", ex);
+    }
+  }
+
 }
 
 

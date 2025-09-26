@@ -47,6 +47,13 @@ public class UserDataEntity {
   private String ipAddress;
   private String userAgent;
 
+  private int noOfTimePasswordChanged;
+
+  public enum LastPasswordChangeMethod{
+    EMAIL,PHONE,NULL
+  };
+  private LastPasswordChangeMethod lastPasswordChangeMethod = LastPasswordChangeMethod.NULL;
+
 
     // blocked use case
     private int incorrectAttempts;
@@ -235,6 +242,21 @@ public class UserDataEntity {
     }
     public String getUserAgent(){
       return this.userAgent;
+    }
+
+    public void setNoOfTimePasswordChanged(int noOfTimePasswordChanged){
+      this.noOfTimePasswordChanged = noOfTimePasswordChanged;
+    }
+    public int getNoOfTimePasswordChanged(){
+      return noOfTimePasswordChanged;
+    }
+
+    public void setLastPasswordChangeMethod(LastPasswordChangeMethod lastPasswordChangeMethod){
+      this.lastPasswordChangeMethod = lastPasswordChangeMethod;
+    }
+
+    public LastPasswordChangeMethod getLastPasswordChangeMethod(){
+      return this.lastPasswordChangeMethod;
     }
 
 }

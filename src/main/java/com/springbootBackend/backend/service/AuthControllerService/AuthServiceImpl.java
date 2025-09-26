@@ -1,17 +1,20 @@
 package com.springbootBackend.backend.service.AuthControllerService;
 
+import com.springbootBackend.backend.dto.ResetPassword.ResetPasswordResponseDto;
 import com.springbootBackend.backend.dto.getNewTokenFromRefreshTokenDto.NewAccessTokenFromRefreshTokenResponseDto;
 import com.springbootBackend.backend.dto.loginByUsernameAndPasswordDto.LoginByUserNamePasswordResponseDto;
 import com.springbootBackend.backend.dto.userEmailSignUpDto.EmailSignUpResponseDto;
 import com.springbootBackend.backend.dto.userMobileSignUpDto.MobileSignUpResponseDto;
 import com.springbootBackend.backend.dto.userMobileSignUpVerificationDto.UserMobileSignupVerificationResponseDto;
 import com.springbootBackend.backend.entity.RefreshToken;
+import com.springbootBackend.backend.entity.ResetPassword;
 import com.springbootBackend.backend.entity.UserDataEntity;
 import com.springbootBackend.backend.entity.UserPendingVerification;
 import com.springbootBackend.backend.exceptions.customExceptions.*;
 import com.springbootBackend.backend.helper.ExtractClientIp;
 import com.springbootBackend.backend.helper.OtpGenerator;
 import com.springbootBackend.backend.repository.RefreshTokenRepository;
+import com.springbootBackend.backend.repository.ResetPasswordRepository;
 import com.springbootBackend.backend.repository.UserDataRepository;
 import com.springbootBackend.backend.repository.UserPendingVerificationRepository;
 import com.springbootBackend.backend.service.JwtService.JwtService;
@@ -52,6 +55,9 @@ public class AuthServiceImpl implements AuthService {
 
     @Autowired
   RefreshTokenRepository refreshTokenRepository;
+
+    @Autowired
+  ResetPasswordRepository resetPasswordRepository;
 
   @Value("${jwt.refresh-token-exp-ms}")
   private long refreshTokenExpiration;
@@ -348,5 +354,54 @@ public class AuthServiceImpl implements AuthService {
 
       return response;
   }
+
+
+  @Override
+  @Transactional
+  public ResetPasswordResponseDto resetUserPassword(String parameter){
+
+      UserDataEntity user = userDataRepository.findByIdentifier(parameter).orElseThrow(() -> new IdentifierNotFound("Invalid credentials.Please provide correct credentials"));
+
+      boolean paramIsPhoneNumber = AuthServiceHelper.isPhoneNumber(parameter);
+      boolean paramIsEmail = AuthServiceHelper.isEmail(parameter);
+
+    ResetPasswordResponseDto response = new ResetPasswordResponseDto();
+    int otp = new OtpGenerator().generateOtp();
+
+      if(paramIsEmail || (!paramIsPhoneNumber && user.getEmail()!=null)){
+        try {
+          emailService.sendResetPasswordOtp(parameter, String.valueOf(otp));
+        } catch (Exception e) {
+          throw new IncorrectOtpException("Error sending sms. Please try again later");
+        }
+        ResetPassword resetPassword = new ResetPassword();
+        resetPassword.setEmail(parameter);
+        resetPassword.setOtp(String.valueOf(otp));
+        resetPassword.setOtpExpiryTime(LocalDateTime.now().plusMinutes(10));
+        resetPassword.setUserName(user.getUserName());
+        response.setStatus("success");
+        response.setMessage("Otp has been sent to your registered email");
+        resetPasswordRepository.save(resetPassword);
+      }
+      else {
+        try {
+          smsService.sendResetPassworSms(parameter, String.valueOf(otp));
+        } catch (Exception e) {
+          throw new IncorrectOtpException("Error sending sms. Please try again later");
+        }
+        ResetPassword resetPassword = new ResetPassword();
+        resetPassword.setPhoneNumber(parameter);
+        resetPassword.setOtp(String.valueOf(otp));
+        resetPassword.setOtpExpiryTime(LocalDateTime.now().plusMinutes(10));
+        resetPassword.setUserName(user.getUserName());
+        response.setStatus("success");
+        response.setMessage("Otp has been sent to your registered phoneNumber");
+        resetPasswordRepository.save(resetPassword);
+      }
+
+      return response;
+  }
+
+
 
 }

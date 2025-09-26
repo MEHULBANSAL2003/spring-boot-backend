@@ -12,4 +12,5 @@ public class ApiConstants {
     public static final String EMAIL_SIGNUP_OTP_VERIFY = "/user/signup/email/otp/verify";
     public static final String LOGIN_BY_IDENTIFIER = "user/login/by/identifier";
     public static final String GENERATE_NEW_ACCESS_TOKEN = "user/get/new/access/token";
+    public static final String USER_RESET_PASSWORD = "user/reset/password";
 }

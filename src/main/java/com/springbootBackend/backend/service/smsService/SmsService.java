@@ -29,4 +29,21 @@ public class SmsService {
         }
         return false;
     }
+
+  public boolean sendResetPassworSms(String toPhoneNumber, String otp) {
+    try {
+      Message message = Message.creator(
+        new PhoneNumber(toPhoneNumber),
+        new PhoneNumber(twilioConfig.getFromPhoneNumber()),
+        "Your Otp code for reset password is: " + otp +". Please enter this otp to change your password.(Valid only for 10 minutes)"
+      ).create();
+
+      return true;
+    } catch (ApiException e) {
+      System.err.println("Twilio API error: " + e.getMessage());
+    } catch (Exception e) {
+      System.err.println("Failed to send SMS: " + e.getMessage());
+    }
+    return false;
+  }
 }

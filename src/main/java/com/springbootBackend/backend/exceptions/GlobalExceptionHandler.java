@@ -58,7 +58,7 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(error,HttpStatus.METHOD_NOT_ALLOWED);
     }
 
-    @ExceptionHandler({OtpExpiresException.class, IncorrectOtpException.class})
+    @ExceptionHandler({OtpExpiresException.class, IncorrectOtpException.class, ResetPasswordNoInputException.class})
     public ResponseEntity<CustomErrorMsgFormat> invalidOtpCredentialsException(Exception ex, HttpServletRequest request){
         CustomErrorMsgFormat error = new CustomErrorMsgFormat(HttpStatus.BAD_REQUEST.getReasonPhrase(), ex.getMessage(), request.getRequestURI(), HttpStatus.BAD_REQUEST.value());
         return new ResponseEntity<>(error,HttpStatus.BAD_REQUEST);
