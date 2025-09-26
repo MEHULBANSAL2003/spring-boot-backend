@@ -49,10 +49,8 @@ public class UserDataEntity {
 
   private int noOfTimePasswordChanged;
 
-  public enum LastPasswordChangeMethod{
-    EMAIL,PHONE,NULL
-  };
-  private LastPasswordChangeMethod lastPasswordChangeMethod = LastPasswordChangeMethod.NULL;
+
+  private ResetPassword.OtpVerifiedBy lastPasswordChangeMethod;
 
 
     // blocked use case
@@ -251,11 +249,11 @@ public class UserDataEntity {
       return noOfTimePasswordChanged;
     }
 
-    public void setLastPasswordChangeMethod(LastPasswordChangeMethod lastPasswordChangeMethod){
+    public void setLastPasswordChangeMethod(ResetPassword.OtpVerifiedBy lastPasswordChangeMethod){
       this.lastPasswordChangeMethod = lastPasswordChangeMethod;
     }
 
-    public LastPasswordChangeMethod getLastPasswordChangeMethod(){
+    public ResetPassword.OtpVerifiedBy getLastPasswordChangeMethod(){
       return this.lastPasswordChangeMethod;
     }
 

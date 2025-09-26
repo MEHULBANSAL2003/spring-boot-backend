@@ -29,6 +29,13 @@ public class ResetPassword {
 
   private LocalDateTime otpExpiryTime;
 
+  private boolean otpVerified = false;
+
+  public enum OtpVerifiedBy{
+    EMAIL, PHONE
+  }
+  private OtpVerifiedBy otpVerifiedBy;
+
   // --- Getters and Setters ---
 
   public Long getId() {
@@ -85,5 +92,20 @@ public class ResetPassword {
 
   public void setOtpExpiryTime(LocalDateTime otpExpiryTime) {
     this.otpExpiryTime = otpExpiryTime;
+  }
+
+  public void setOtpVerified(boolean otpVerified){
+    this.otpVerified = otpVerified;
+  }
+
+  public boolean getOtpVerified(){
+    return this.otpVerified;
+  }
+
+  public void setOtpVerifiedBy(OtpVerifiedBy otpVerifiedBy){
+    this.otpVerifiedBy = otpVerifiedBy;
+  }
+  public OtpVerifiedBy getOtpVerifiedBy(){
+    return this.otpVerifiedBy;
   }
 }

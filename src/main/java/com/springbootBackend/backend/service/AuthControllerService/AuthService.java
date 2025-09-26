@@ -1,5 +1,7 @@
 package com.springbootBackend.backend.service.AuthControllerService;
 
+import com.springbootBackend.backend.dto.ResetPassword.ResetPasswordFinalResponseDto;
+import com.springbootBackend.backend.dto.ResetPassword.ResetPasswordOtpVerifyResponseDto;
 import com.springbootBackend.backend.dto.ResetPassword.ResetPasswordResponseDto;
 import com.springbootBackend.backend.dto.getNewTokenFromRefreshTokenDto.NewAccessTokenFromRefreshTokenResponseDto;
 import com.springbootBackend.backend.dto.loginByUsernameAndPasswordDto.LoginByUserNamePasswordResponseDto;
@@ -22,4 +24,8 @@ public interface AuthService {
     public NewAccessTokenFromRefreshTokenResponseDto generateAccessTokenFromRefreshToken(String refreshToken);
 
     public ResetPasswordResponseDto  resetUserPassword(String parameter, String sendOtpTo);
+
+    public ResetPasswordOtpVerifyResponseDto resetUserPasswordOtpVerify(String otp, String identifier);
+
+  public ResetPasswordFinalResponseDto resetUserPasswordFinal(String identifier, String password);
 }

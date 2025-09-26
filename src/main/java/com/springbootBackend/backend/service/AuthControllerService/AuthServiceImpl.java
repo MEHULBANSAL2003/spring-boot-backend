@@ -1,5 +1,7 @@
 package com.springbootBackend.backend.service.AuthControllerService;
 
+import com.springbootBackend.backend.dto.ResetPassword.ResetPasswordFinalResponseDto;
+import com.springbootBackend.backend.dto.ResetPassword.ResetPasswordOtpVerifyResponseDto;
 import com.springbootBackend.backend.dto.ResetPassword.ResetPasswordResponseDto;
 import com.springbootBackend.backend.dto.getNewTokenFromRefreshTokenDto.NewAccessTokenFromRefreshTokenResponseDto;
 import com.springbootBackend.backend.dto.loginByUsernameAndPasswordDto.LoginByUserNamePasswordResponseDto;
@@ -398,6 +400,58 @@ public class AuthServiceImpl implements AuthService {
 
       return response;
   }
+
+  @Override
+  @Transactional
+  public ResetPasswordOtpVerifyResponseDto resetUserPasswordOtpVerify(String identifier,String otp){
+      ResetPassword resetPasswordEntry = resetPasswordRepository.findByIdentifier(identifier).orElseThrow(() -> new IdentifierNotFound("invalid request!!"));
+
+      if(resetPasswordEntry.getOtpExpiryTime().isBefore(LocalDateTime.now())){
+        throw new OtpExpiresException("OTP has been expired!!.");
+      }
+      if(!resetPasswordEntry.getOtp().equals(otp)){
+        throw new IncorrectOtpException("otp entered is incorrect");
+      }
+      ResetPasswordOtpVerifyResponseDto response = new ResetPasswordOtpVerifyResponseDto();
+      response.setStatus("success");
+      response.setMessage("Otp verified successfully");
+      resetPasswordEntry.setOtpVerified(true);
+      resetPasswordEntry.setOtpVerifiedBy(ResetPassword.OtpVerifiedBy.PHONE);
+      resetPasswordRepository.save(resetPasswordEntry);
+
+      return response;
+  }
+
+  @Override
+  @Transactional
+  public ResetPasswordFinalResponseDto resetUserPasswordFinal(String identifier, String password){
+
+      UserDataEntity user = userDataRepository.findByIdentifier(identifier).orElseThrow(()-> new IdentifierNotFound("user not registered"));
+      ResetPassword resetPassword = resetPasswordRepository.findByIdentifier(identifier).orElseThrow(()-> new IdentifierNotFound("user not found"));
+
+      if(!resetPassword.getOtpVerified()){
+        throw new IncorrectPassword("first verify your identity");
+      }
+
+    boolean isPasswordMatches =  passwordEncoder.matches(password, user.getHashedPassword());
+
+      if(isPasswordMatches){
+        throw new IncorrectPassword("password cannot be same as previous one");
+      }
+
+      String hashedPassword = passwordEncoder.encode(password);
+      user.setHashedPassword(hashedPassword);
+      user.setNoOfTimePasswordChanged(user.getNoOfTimePasswordChanged()+1);
+      user.setLastPasswordChangeMethod(resetPassword.getOtpVerifiedBy());
+
+
+      userDataRepository.save(user);
+      ResetPasswordFinalResponseDto response = new ResetPasswordFinalResponseDto();
+       response.setStatus("success");
+       response.setMessage("password changed successfully");
+       return response;
+  }
+
 
 
 

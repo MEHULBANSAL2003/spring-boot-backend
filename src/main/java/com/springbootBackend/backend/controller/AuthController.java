@@ -1,6 +1,10 @@
 package com.springbootBackend.backend.controller;
 
 import com.springbootBackend.backend.constants.ApiConstants;
+import com.springbootBackend.backend.dto.ResetPassword.ResetPasswordFinalRequestDto;
+import com.springbootBackend.backend.dto.ResetPassword.ResetPasswordFinalResponseDto;
+import com.springbootBackend.backend.dto.ResetPassword.ResetPasswordOtpVerifyRequestDto;
+import com.springbootBackend.backend.dto.ResetPassword.ResetPasswordOtpVerifyResponseDto;
 import com.springbootBackend.backend.dto.ResetPassword.ResetPasswordRequestDto;
 import com.springbootBackend.backend.dto.ResetPassword.ResetPasswordResponseDto;
 import com.springbootBackend.backend.dto.getNewTokenFromRefreshTokenDto.NewAccessTokenFromRefreshTokenResponseDto;
@@ -100,6 +104,18 @@ public class AuthController {
 
        ResetPasswordResponseDto response = authService.resetUserPassword(parameter, sendOtpTo);
       return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @PostMapping(ApiConstants.USER_RESET_PASSWORD_OTP_VERIFY)
+      public ResponseEntity<ResetPasswordOtpVerifyResponseDto> resetUserPasswordOtpVerify(@Valid @RequestBody ResetPasswordOtpVerifyRequestDto requestDto){
+      ResetPasswordOtpVerifyResponseDto response = authService.resetUserPasswordOtpVerify(requestDto.getIdentifier(), requestDto.getOtp());
+      return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @PostMapping(ApiConstants.USER_RESET_PASSWORD)
+  public ResponseEntity<ResetPasswordFinalResponseDto> resetUserPassword(@Valid @RequestBody ResetPasswordFinalRequestDto requestDto){
+
+
     }
 
 
