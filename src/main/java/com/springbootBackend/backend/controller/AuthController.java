@@ -78,7 +78,7 @@ public class AuthController {
     }
 
 
-    @PostMapping(ApiConstants.USER_RESET_PASSWORD)
+    @PostMapping(ApiConstants.USER_RESET_PASSWORD_CRED_VERIFY)
   public ResponseEntity<ResetPasswordResponseDto> resetUserPassword(@Valid @RequestBody ResetPasswordRequestDto requestDto){
 
            if(requestDto.getEmail()==null && requestDto.getPhoneNumber()==null && requestDto.getUserName()==null){
