@@ -4,6 +4,7 @@ public class ApiConstants {
 
     public static final String API_BASE = "/api";
     public static final String AUTH_BASE = API_BASE + "/auth";
+    public static final String USER_BASE = API_BASE + "/profile";
 
 
     public static final String EMAIL_SIGNUP ="/user/signup/email/get-otp";
@@ -15,4 +16,6 @@ public class ApiConstants {
     public static final String USER_RESET_PASSWORD_CRED_VERIFY = "/user/reset/password/credentials/verify";
     public static final String USER_RESET_PASSWORD_OTP_VERIFY = "/user/reset/password/otp/verify";
     public static final String USER_RESET_PASSWORD = "/user/reset/password";
+
+    public static final String USER_CHANGE_PASSWORD = "/change/password";
 }

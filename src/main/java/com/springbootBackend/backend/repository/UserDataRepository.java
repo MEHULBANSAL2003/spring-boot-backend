@@ -11,6 +11,7 @@ import java.util.Optional;
 
 public interface UserDataRepository extends JpaRepository<UserDataEntity,Long> {
 Optional<UserDataEntity> findByPhoneNumber(String phoneNumber);
+  Optional<UserDataEntity> findByUserId(Long id);
     Optional<UserDataEntity> findByUserNameOrPhoneNumber(String userName,String phoneNumber);
     Optional<UserDataEntity> findByUserName(String userName);
     Optional<UserDataEntity> findByUserNameOrEmail(String userName, String email);
