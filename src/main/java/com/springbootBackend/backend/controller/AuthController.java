@@ -115,6 +115,9 @@ public class AuthController {
     @PostMapping(ApiConstants.USER_RESET_PASSWORD)
   public ResponseEntity<ResetPasswordFinalResponseDto> resetUserPassword(@Valid @RequestBody ResetPasswordFinalRequestDto requestDto){
 
+      ResetPasswordFinalResponseDto response = authService.resetUserPasswordFinal(requestDto.getIdentifier(), requestDto.getNewPassword());
+
+      return new ResponseEntity<>(response, HttpStatus.OK);
 
     }
 

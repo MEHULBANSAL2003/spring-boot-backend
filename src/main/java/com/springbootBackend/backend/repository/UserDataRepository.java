@@ -13,7 +13,7 @@ public interface UserDataRepository extends JpaRepository<UserDataEntity,Long> {
 Optional<UserDataEntity> findByPhoneNumber(String phoneNumber);
     Optional<UserDataEntity> findByUserNameOrPhoneNumber(String userName,String phoneNumber);
     Optional<UserDataEntity> findByUserName(String userName);
-    Optional<UserDataEntity> findByUserNameOrEmail(String userName, String phoneNumber);
+    Optional<UserDataEntity> findByUserNameOrEmail(String userName, String email);
 
     @Query("SELECT u FROM UserDataEntity u WHERE u.userName = :identifier OR u.email = :identifier OR u.phoneNumber = :identifier")
     Optional<UserDataEntity> findByIdentifier(@Param("identifier") String identifier);

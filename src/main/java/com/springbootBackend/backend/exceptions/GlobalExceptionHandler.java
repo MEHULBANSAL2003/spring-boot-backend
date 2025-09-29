@@ -104,6 +104,7 @@ public class GlobalExceptionHandler {
     //internal server error exception - 500
     @ExceptionHandler(Exception.class)
     public ResponseEntity<CustomErrorMsgFormat> handleInternalServerException(Exception ex, HttpServletRequest request){
+      ex.printStackTrace();
         CustomErrorMsgFormat error = new CustomErrorMsgFormat(HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase(), "An unexpected error occurred. Please try again later.", request.getRequestURI(), HttpStatus.INTERNAL_SERVER_ERROR.value());
         return new ResponseEntity<>(error, HttpStatus.INTERNAL_SERVER_ERROR);
     }

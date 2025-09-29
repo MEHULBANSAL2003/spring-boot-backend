@@ -13,6 +13,6 @@ public interface ResetPasswordRepository extends JpaRepository<ResetPassword,Lon
 
   Optional<ResetPassword> findByUserName(String userName);
 
-  @Query("SELECT u FROM UserDataEntity u WHERE u.userName = :identifier OR u.email = :identifier OR u.phoneNumber = :identifier")
+  @Query("SELECT u FROM ResetPassword u WHERE u.userName = :identifier OR u.email = :identifier OR u.phoneNumber = :identifier")
   Optional<ResetPassword> findByIdentifier(@Param("identifier") String identifier);
 }

@@ -49,7 +49,7 @@ public class UserDataEntity {
 
   private int noOfTimePasswordChanged;
 
-
+  @Enumerated(EnumType.STRING)
   private ResetPassword.OtpVerifiedBy lastPasswordChangeMethod;
 
 
