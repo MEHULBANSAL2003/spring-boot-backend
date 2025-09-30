@@ -73,6 +73,39 @@ public class EmailService {
     }
   }
 
+  public void sendWelcomeEmail(String sendTo){
+    Email from = new Email(fromEmail);
+    String subject = "Registration successfull!!";
+    Email to = new Email(sendTo);
+    Content content = new Content(
+      "text/plain",
+      "🎉 Welcome to Company@Mehul!\n\n" +
+        "Your account has been created successfully. You can now log in and start using our services.\n\n" +
+        "If this was not you, please contact our support team immediately.\n\n" +
+        "Thank you for joining us!\n\n" +
+        "- The Company@Mehul Team"
+    );
+
+    Mail mail = new Mail(from, subject, to, content);
+
+    SendGrid sg = new SendGrid(sendGridApiKey);
+    Request request = new Request();
+
+    try {
+      request.setMethod(Method.POST);
+      request.setEndpoint("mail/send");
+      request.setBody(mail.build());
+
+      Response response = sg.api(request);
+      if (response.getStatusCode() >= 400) {
+        throw new RuntimeException("Failed to send email " + response.getBody());
+      }
+
+    } catch (IOException ex) {
+      throw new RuntimeException("Error sending email", ex);
+    }
+  }
+
 }
 
 

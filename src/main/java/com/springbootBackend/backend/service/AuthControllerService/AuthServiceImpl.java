@@ -163,6 +163,10 @@ public class AuthServiceImpl implements AuthService {
         UserDataEntity savedUser = userDataRepository.save(newUser);
         userPendingVerificationRepository.delete(pendingUser);
 
+        if(newUser.getEmail()!=null) {
+         emailService.sendWelcomeEmail(newUser.getEmail());
+        }
+
         return new UserMobileSignupVerificationResponseDto("success",savedUser.getUserId(),savedUser.getEmail(),savedUser.getUserName(),savedUser.getCountryCode(),savedUser.getPhoneNumber(), savedUser.getCreatedAt(),savedUser.getUpdatedAt());
 
     }
