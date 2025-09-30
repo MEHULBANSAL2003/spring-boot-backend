@@ -3,6 +3,7 @@ package com.springbootBackend.backend.service.smsService;
 import com.springbootBackend.backend.config.TwilioConfig;
 import com.twilio.exception.ApiException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import com.twilio.rest.api.v2010.account.Message;
 import com.twilio.type.PhoneNumber;
@@ -47,6 +48,7 @@ public class SmsService {
     return false;
   }
 
+  @Async
   public boolean sendWelcomeSms(String toPhoneNumber) {
     try {
       Message message = Message.creator(
