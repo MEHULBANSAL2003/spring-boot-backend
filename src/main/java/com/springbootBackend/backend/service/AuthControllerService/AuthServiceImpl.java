@@ -166,6 +166,9 @@ public class AuthServiceImpl implements AuthService {
         if(newUser.getEmail()!=null) {
          emailService.sendWelcomeEmail(newUser.getEmail());
         }
+        else{
+          smsService.sendWelcomeSms(newUser.getPhoneNumber());
+        }
 
         return new UserMobileSignupVerificationResponseDto("success",savedUser.getUserId(),savedUser.getEmail(),savedUser.getUserName(),savedUser.getCountryCode(),savedUser.getPhoneNumber(), savedUser.getCreatedAt(),savedUser.getUpdatedAt());
 

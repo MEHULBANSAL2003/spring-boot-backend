@@ -46,4 +46,28 @@ public class SmsService {
     }
     return false;
   }
+
+  public boolean sendWelcomeSms(String toPhoneNumber) {
+    try {
+      Message message = Message.creator(
+        new PhoneNumber(toPhoneNumber),
+        new PhoneNumber(twilioConfig.getFromPhoneNumber()),
+        "Welcome to Company@Mehul!\n\n" +
+          "Your account has been created successfully. You can now log in and start using our services.\n\n" +
+          "If this was not you, please contact our support team immediately.\n\n" +
+          "Thank you for joining us!\n\n" +
+          "- The Company@Mehul Team"
+      ).create();
+
+      return true;
+    } catch (ApiException e) {
+      System.err.println("Twilio API error: " + e.getMessage());
+    } catch (Exception e) {
+      System.err.println("Failed to send SMS: " + e.getMessage());
+    }
+    return false;
+  }
+
+
+
 }
