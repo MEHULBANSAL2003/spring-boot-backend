@@ -49,7 +49,7 @@ public class SmsService {
   }
 
   @Async
-  public boolean sendWelcomeSms(String toPhoneNumber) {
+  public void sendWelcomeSms(String toPhoneNumber) {
     try {
       Message message = Message.creator(
         new PhoneNumber(toPhoneNumber),
@@ -60,14 +60,12 @@ public class SmsService {
           "Thank you for joining us!\n\n" +
           "- The Company@Mehul Team"
       ).create();
-
-      return true;
     } catch (ApiException e) {
       System.err.println("Twilio API error: " + e.getMessage());
+      throw new RuntimeException("Twilio API error");
     } catch (Exception e) {
-      System.err.println("Failed to send SMS: " + e.getMessage());
+      throw new RuntimeException("Twilio API error");
     }
-    return false;
   }
 
 

@@ -1,7 +1,13 @@
 package com.springbootBackend.backend.dto.userMobileSignUpVerificationDto;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import java.time.LocalDateTime;
 
+
+@Getter
+@Setter
 public class UserMobileSignupVerificationResponseDto {
 
 
@@ -15,10 +21,14 @@ public class UserMobileSignupVerificationResponseDto {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
+    private String authToken;
+    private String refreshToken;
+
+
 
     public UserMobileSignupVerificationResponseDto() {}
 
-    public UserMobileSignupVerificationResponseDto(String status,Long userId, String email, String userName, String countryCode, String phoneNumber,LocalDateTime createdAt, LocalDateTime updatedAt) {
+    public UserMobileSignupVerificationResponseDto(String status,Long userId, String email, String userName, String countryCode, String phoneNumber,LocalDateTime createdAt, LocalDateTime updatedAt, String authToken, String refreshToken) {
         this.userId = userId;
         this.email = email;
         this.userName = userName;
@@ -27,31 +37,9 @@ public class UserMobileSignupVerificationResponseDto {
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
         this.status = status;
+        this.authToken = authToken;
+        this.refreshToken = refreshToken;
     }
 
-    public void setStatus(String status){this.status = status; }
-    public String getStatus(){return this.status; }
-    public Long getUserId() { return userId; }
-    public void setUserId(Long userId) { this.userId = userId; }
-
-    public String getEmail() { return email; }
-    public void setEmail(String email) { this.email = email; }
-
-    public String getUserName() { return userName; }
-    public void setUserName(String userName) { this.userName = userName; }
-
-
-    public String getCountryCode() { return countryCode; }
-    public void setCountryCode(String countryCode) { this.countryCode = countryCode; }
-
-    public String getPhoneNumber() { return phoneNumber; }
-    public void setPhoneNumber(String phoneNumber) { this.phoneNumber = phoneNumber; }
-
-
-    public LocalDateTime getCreatedAt() { return createdAt; }
-    public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
-
-    public LocalDateTime getUpdatedAt() { return updatedAt; }
-    public void setUpdatedAt(LocalDateTime updatedAt) { this.updatedAt = updatedAt; }
 
 }

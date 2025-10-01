@@ -163,6 +163,13 @@ public class AuthServiceImpl implements AuthService {
         UserDataEntity savedUser = userDataRepository.save(newUser);
         userPendingVerificationRepository.delete(pendingUser);
 
+      String access_token =  jwtService.generateAccessToken(newUser.getUserId());
+      String refresh_token = jwtService.generateRefreshToken(newUser.getUserId());
+
+      RefreshToken refreshToken = new RefreshToken(newUser ,refresh_token, Instant.now(), Instant.now().plus(7,ChronoUnit.DAYS));
+
+      refreshTokenRepository.save(refreshToken);
+
         if(newUser.getEmail()!=null) {
          emailService.sendWelcomeEmail(newUser.getEmail());
         }
@@ -171,7 +178,8 @@ public class AuthServiceImpl implements AuthService {
           smsService.sendWelcomeSms(number);
         }
 
-        return new UserMobileSignupVerificationResponseDto("success",savedUser.getUserId(),savedUser.getEmail(),savedUser.getUserName(),savedUser.getCountryCode(),savedUser.getPhoneNumber(), savedUser.getCreatedAt(),savedUser.getUpdatedAt());
+
+        return new UserMobileSignupVerificationResponseDto("success",savedUser.getUserId(),savedUser.getEmail(),savedUser.getUserName(),savedUser.getCountryCode(),savedUser.getPhoneNumber(), savedUser.getCreatedAt(),savedUser.getUpdatedAt(),access_token,refresh_token);
 
     }
 
