@@ -49,6 +49,7 @@ public class AuthController {
 
     @PostMapping(ApiConstants.EMAIL_SIGNUP)
     public ResponseEntity<EmailSignUpResponseDto> userEmailSignupGetOtp(@Valid @RequestBody EmailSignUpRequestDto requestDto){
+         System.out.println(requestDto.getEmail());
         EmailSignUpResponseDto response = authService.emailSignupGetOtp(requestDto.getEmail(), requestDto.getUserName(), requestDto.getPassword());
         return new ResponseEntity<>(response, HttpStatus.OK);
     }

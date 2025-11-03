@@ -72,7 +72,7 @@ public class AuthServiceImpl implements AuthService {
         UserDataEntity existing = userDataRepository.findByUserNameOrPhoneNumber(userName,phoneNumber).orElse(null);
 
         if(existing!=null){
-            if(existing.getPhoneNumber().equals(phoneNumber)){
+            if(existing.getPhoneNumber()!=null && existing.getPhoneNumber().equals(phoneNumber)){
                 throw new PhoneNumberAlreadyExistsException("Phone number already registered: "+ phoneNumber);
             }
             if(existing.getUserName().equals(userName)){
@@ -189,7 +189,7 @@ public class AuthServiceImpl implements AuthService {
         UserDataEntity existing = userDataRepository.findByUserNameOrEmail(userName, email).orElse(null);
 
         if(existing!=null){
-            if(existing.getEmail().equals(email)){
+            if(existing.getEmail()!=null &&  existing.getEmail().equals(email)){
                 throw new PhoneNumberAlreadyExistsException("Email already registered");
             }
             if(existing.getUserName().equals(userName)){
