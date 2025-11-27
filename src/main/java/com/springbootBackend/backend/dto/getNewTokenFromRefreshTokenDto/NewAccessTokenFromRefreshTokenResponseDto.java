@@ -1,6 +1,12 @@
 package com.springbootBackend.backend.dto.getNewTokenFromRefreshTokenDto;
 
+import lombok.Getter;
+import lombok.Setter;
+
+@Setter
+@Getter
 public class NewAccessTokenFromRefreshTokenResponseDto {
+  // ✅ Getters & setters
   private String status;
   private String message;
   private String reason;
@@ -26,19 +32,4 @@ public class NewAccessTokenFromRefreshTokenResponseDto {
     this.refreshToken = refreshToken;
   }
 
-  // ✅ Getters & setters
-  public String getStatus() { return status; }
-  public void setStatus(String status) { this.status = status; }
-
-  public String getMessage() { return message; }
-  public void setMessage(String message) { this.message = message; }
-
-  public String getReason() { return reason; }
-  public void setReason(String reason) { this.reason = reason; }
-
-  public String getAuthToken() { return authToken; }
-  public void setAuthToken(String authToken) { this.authToken = authToken; }
-
-  public String getRefreshToken() { return refreshToken; }
-  public void setRefreshToken(String refreshToken) { this.refreshToken = refreshToken; }
 }

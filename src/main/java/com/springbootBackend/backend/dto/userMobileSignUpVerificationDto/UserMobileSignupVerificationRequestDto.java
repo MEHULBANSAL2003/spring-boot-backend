@@ -2,7 +2,11 @@ package com.springbootBackend.backend.dto.userMobileSignUpVerificationDto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
+import lombok.Getter;
+import lombok.Setter;
 
+@Setter
+@Getter
 public class UserMobileSignupVerificationRequestDto {
 
     @NotBlank(message = "Username is required")
@@ -13,19 +17,4 @@ public class UserMobileSignupVerificationRequestDto {
     @Size(min = 6, max = 6, message = "Otp must be of 6 characters")
     String otp;
 
-    public void setOtp(String otp) {
-        this.otp = otp;
-    }
-
-    public String getOtp() {
-        return otp;
-    }
-
-    public void setUserName(String userName) {
-        this.userName = userName;
-    }
-
-    public String getUserName() {
-        return userName;
-    }
 }

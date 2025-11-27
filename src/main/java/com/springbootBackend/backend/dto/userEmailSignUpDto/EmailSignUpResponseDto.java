@@ -1,5 +1,11 @@
 package com.springbootBackend.backend.dto.userEmailSignUpDto;
 
+
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
 public class EmailSignUpResponseDto {
 
     String status;
@@ -18,10 +24,4 @@ public class EmailSignUpResponseDto {
         this.isTwilioActive = isTwilioActive;
     }
 
-    public String getStatus(){ return this.status; }
-    public int getOtpLength(){return this.otpLength; }
-    public boolean getIsOtpRequired(){return this.isOtpRequired; }
-    public String getMessage(){return this.message; }
-    public int getExpiresIn(){return this.expiresIn; }
-    public boolean getIsTwilioActive(){return this.isTwilioActive; }
 }

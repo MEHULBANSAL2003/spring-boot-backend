@@ -1,11 +1,10 @@
 package com.springbootBackend.backend.dto.userMobileSignUpDto;
 
 import jakarta.validation.constraints.NotBlank;
+import lombok.Getter;
 
-
-
+@Getter
 public class MobileSignUpResponseDto {
-
     String status;
     int otpLength;
     boolean isOtpRequired;
@@ -21,12 +20,5 @@ public class MobileSignUpResponseDto {
         this.expiresIn = expiresIn;
         this.isTwilioActive = isTwilioActive;
     }
-
-    public String getStatus(){ return this.status; }
-    public int getOtpLength(){return this.otpLength; }
-    public boolean getIsOtpRequired(){return this.isOtpRequired; }
-    public String getMessage(){return this.message; }
-    public int getExpiresIn(){return this.expiresIn; }
-    public boolean getIsTwilioActive(){return this.isTwilioActive; }
 
 }

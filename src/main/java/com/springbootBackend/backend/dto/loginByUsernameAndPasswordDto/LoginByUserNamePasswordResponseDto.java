@@ -1,11 +1,15 @@
 package com.springbootBackend.backend.dto.loginByUsernameAndPasswordDto;
 
 import com.springbootBackend.backend.entity.UserDataEntity;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Date;
 
+@Getter
+@Setter
 public class LoginByUserNamePasswordResponseDto {
 
     private String status;
@@ -47,117 +51,4 @@ public class LoginByUserNamePasswordResponseDto {
         this.refreshToken = refreshToken;
 
     }
-
-
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
-    }
-
-    public Long getUserId() {
-        return userId;
-    }
-
-    public void setUserId(Long userId) {
-        this.userId = userId;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getUserName() {
-        return userName;
-    }
-
-    public void setUserName(String userName) {
-        this.userName = userName;
-    }
-
-    public String getCountryCode() {
-        return countryCode;
-    }
-
-    public void setCountryCode(String countryCode) {
-        this.countryCode = countryCode;
-    }
-
-    public String getPhoneNumber() {
-        return phoneNumber;
-    }
-
-    public void setPhoneNumber(String phoneNumber) {
-        this.phoneNumber = phoneNumber;
-    }
-
-    public Integer getAge() {
-        return age;
-    }
-
-    public void setAge(Integer age) {
-        this.age = age;
-    }
-
-    public LocalDate getDob() {
-        return dob;
-    }
-
-    public void setDob(LocalDate dob) {
-        this.dob = dob;
-    }
-
-    public UserDataEntity.Gender getGender() {
-        return gender;
-    }
-
-    public void setGender(UserDataEntity.Gender gender) {
-        this.gender = gender;
-    }
-
-    public String getProfile_pic() {
-        return profile_pic;
-    }
-
-    public void setProfile_pic(String profile_pic) {
-        this.profile_pic = profile_pic;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public LocalDateTime getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public void setUpdatedAt(LocalDateTime updatedAt) {
-        this.updatedAt = updatedAt;
-    }
-
-    public void setAuth_token(String authToken){
-      this.authToken = authToken;
-    }
-    public String getAuthToken(){
-      return this.authToken;
-    }
-    public void setRefreshToken(String refreshToken){
-      this.refreshToken = refreshToken;
-    }
-    public String getRefreshToken(){
-      return this.refreshToken;
-    }
-
-
-
 }
