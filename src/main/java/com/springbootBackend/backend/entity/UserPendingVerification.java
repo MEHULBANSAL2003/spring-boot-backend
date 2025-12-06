@@ -9,7 +9,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
-import java.time.LocalTime;
+
 
 @Entity
 @Table(name = "pending_verification",indexes = {
@@ -19,7 +19,6 @@ import java.time.LocalTime;
 })
 @Getter
 @Setter
-
 @org.hibernate.annotations.Check(constraints = "email IS NOT NULL OR phone_number IS NOT NULL")
 public class UserPendingVerification {
 

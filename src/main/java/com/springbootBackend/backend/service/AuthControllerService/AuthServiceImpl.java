@@ -107,7 +107,7 @@ public class AuthServiceImpl implements AuthService {
         pendingUser.setOtp(hashedOtp);
         pendingUser.setIncorrectAttempts(0);
         pendingUser.setOtpExpiryTime(LocalDateTime.now().plusMinutes(10));
-        pendingUser.setIsTwilioActive(true);
+        pendingUser.setTwilioActive(true);
 
         String number = "+91"+phoneNumber;
         boolean smsSent = smsService.sendSms(number,String.valueOf(otp));
@@ -222,7 +222,7 @@ public class AuthServiceImpl implements AuthService {
         pendingUser.setOtp(hashedOtp);
         pendingUser.setIncorrectAttempts(0);
         pendingUser.setOtpExpiryTime(LocalDateTime.now().plusMinutes(10));
-        pendingUser.setIsTwilioActive(false);
+        pendingUser.setTwilioActive(false);
         pendingUser.setPhoneNumber(null);
 
         try {
@@ -447,7 +447,7 @@ public class AuthServiceImpl implements AuthService {
       UserDataEntity user = userDataRepository.findByIdentifier(identifier).orElseThrow(()-> new IdentifierNotFound("user not registered"));
       ResetPassword resetPassword = resetPasswordRepository.findByIdentifier(identifier).orElseThrow(()-> new IdentifierNotFound("user not found"));
 
-      if(!resetPassword.getOtpVerified()){
+      if(!resetPassword.isOtpVerified()){
         throw new IncorrectPassword("first verify your identity");
       }
 
