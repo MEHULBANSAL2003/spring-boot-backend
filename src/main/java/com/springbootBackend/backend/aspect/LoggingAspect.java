@@ -1,28 +1,26 @@
 package com.springbootBackend.backend.aspect;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.springbootBackend.backend.ErrorResponse.CustomErrorMsgFormat;
 import com.springbootBackend.backend.dto.kafkaLogEvent.LogEvent;
 import com.springbootBackend.backend.service.loggingService.LoggingService;
+import jakarta.servlet.*;
 import jakarta.servlet.http.HttpServletRequest;
-import org.aspectj.lang.ProceedingJoinPoint;
-import org.aspectj.lang.annotation.Around;
-import org.aspectj.lang.annotation.Aspect;
-import org.aspectj.lang.annotation.Pointcut;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
+import org.springframework.web.util.ContentCachingRequestWrapper;
+import org.springframework.web.util.ContentCachingResponseWrapper;
 
+import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
-@Aspect
 @Component
-public class LoggingAspect {
+@Order(2) // Run after JWT filter (which is usually Order 1)
+public class LoggingAspect implements Filter {
 
   @Autowired
   private LoggingService loggingService;
@@ -32,57 +30,56 @@ public class LoggingAspect {
 
   private final ObjectMapper objectMapper = new ObjectMapper();
 
-  @Pointcut("within(@org.springframework.web.bind.annotation.RestController *)")
-  public void controllerMethods() {}
+  @Override
+  public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
+    throws IOException, ServletException {
 
-  @Around("controllerMethods()")
-  public Object logRequestResponse(ProceedingJoinPoint joinPoint) throws Throwable {
-    HttpServletRequest request = getHttpServletRequest();
-    if (request == null) {
-      return joinPoint.proceed();
+    if (!(request instanceof HttpServletRequest) || !(response instanceof HttpServletResponse)) {
+      chain.doFilter(request, response);
+      return;
     }
+
+    HttpServletRequest httpRequest = (HttpServletRequest) request;
+    HttpServletResponse httpResponse = (HttpServletResponse) response;
+
+    // Wrap request and response to cache their content
+    ContentCachingRequestWrapper requestWrapper = new ContentCachingRequestWrapper(httpRequest);
+    ContentCachingResponseWrapper responseWrapper = new ContentCachingResponseWrapper(httpResponse);
 
     String traceId = UUID.randomUUID().toString();
     long requestTime = System.currentTimeMillis();
 
-    Object response = null;
-    Throwable caughtException = null;
-
     try {
-      response = joinPoint.proceed();
-      return response;
-    } catch (Throwable e) {
-      caughtException = e;
-      throw e;
+      // Continue the filter chain
+      chain.doFilter(requestWrapper, responseWrapper);
     } finally {
       long responseTime = System.currentTimeMillis();
       long duration = responseTime - requestTime;
 
       try {
+        // Log the request/response AFTER everything is complete (including exception handling)
         LogEvent event = buildLogEvent(
-          request,
-          joinPoint,
-          response,
-          caughtException,
+          requestWrapper,
+          responseWrapper,
           traceId,
           requestTime,
           responseTime,
           duration
         );
         loggingService.publish(event);
-      } catch (Exception loggingException) {
-        // Don't let logging errors break the application
-        System.err.println("Failed to log event: " + loggingException.getMessage());
-        loggingException.printStackTrace();
+      } catch (Exception e) {
+        System.err.println("Failed to log event: " + e.getMessage());
+        e.printStackTrace();
       }
+
+      // Copy the cached response content to the actual response
+      responseWrapper.copyBodyToResponse();
     }
   }
 
   private LogEvent buildLogEvent(
-    HttpServletRequest request,
-    ProceedingJoinPoint joinPoint,
-    Object response,
-    Throwable exception,
+    ContentCachingRequestWrapper request,
+    ContentCachingResponseWrapper response,
     String traceId,
     long requestTime,
     long responseTime,
@@ -111,58 +108,31 @@ public class LoggingAspect {
     String httpVersion = request.getProtocol();
 
     // Request body
-    Object requestBody = joinPoint.getArgs().length > 0 ? joinPoint.getArgs()[0] : null;
-    Integer requestBodySize = calculateBodySize(requestBody);
+    String requestBody = getRequestBody(request);
+    Integer requestBodySize = requestBody != null ? requestBody.length() : 0;
 
-    // Determine response details
-    int statusCode;
-    String statusCodeType;
-    String apiResponseStatus;
-    Object responseBody = null;
-    Integer responseBodySize = null;
+    // Response body
+    String responseBody = getResponseBody(response);
+    Integer responseBodySize = responseBody != null ? responseBody.length() : 0;
+
+    // Response status - THIS WILL NOW HAVE THE CORRECT VALUE FROM GlobalExceptionHandler!
+    int statusCode = response.getStatus();
+    String statusCodeType = getStatusCodeType(statusCode);
+    String apiResponseStatus = statusCode >= 200 && statusCode < 300 ? "SUCCESS" : "FAILURE";
+
+    // For error responses, try to extract error message from response body
     String errorMessage = null;
     String exceptionType = null;
-    String exceptionStackTrace = null;
-
-    if (exception != null) {
-      // Exception was thrown - will be handled by GlobalExceptionHandler
-      // But we still need to log it
-      exceptionType = exception.getClass().getSimpleName();
-      errorMessage = exception.getMessage();
-      exceptionStackTrace = getStackTraceAsString(exception);
-
-      // Default values - actual response will be created by GlobalExceptionHandler
-      statusCode = 500;
-      statusCodeType = HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase();
-      apiResponseStatus = "FAILURE";
-
-    } else if (response instanceof ResponseEntity) {
-      // ResponseEntity case - includes responses from GlobalExceptionHandler
-      ResponseEntity<?> responseEntity = (ResponseEntity<?>) response;
-      statusCode = responseEntity.getStatusCode().value();
-      statusCodeType = HttpStatus.valueOf(statusCode).getReasonPhrase();
-      apiResponseStatus = statusCode >= 200 && statusCode < 300 ? "SUCCESS" : "FAILURE";
-
-      Object body = responseEntity.getBody();
-      responseBody = body;
-      responseBodySize = calculateBodySize(body);
-
-      // Extract error details from CustomErrorMsgFormat if present
-      if (body instanceof CustomErrorMsgFormat) {
-        CustomErrorMsgFormat errorResponse = (CustomErrorMsgFormat) body;
-        errorMessage = errorResponse.getMessage();
-        statusCodeType = errorResponse.getError(); // This contains the reason phrase
-        // Note: exception type and stack trace won't be available here
-        // as they weren't thrown in the aspect's scope
+    if (statusCode >= 400 && responseBody != null) {
+      try {
+        // Try to parse CustomErrorMsgFormat from response
+        Map<String, Object> errorResponse = objectMapper.readValue(responseBody, Map.class);
+        errorMessage = (String) errorResponse.get("message");
+        exceptionType = (String) errorResponse.get("error");
+      } catch (Exception e) {
+        // Response is not JSON or not in expected format
+        errorMessage = "Error occurred";
       }
-
-    } else {
-      // Normal successful response (not wrapped in ResponseEntity)
-      statusCode = 200;
-      statusCodeType = HttpStatus.OK.getReasonPhrase();
-      apiResponseStatus = "SUCCESS";
-      responseBody = response;
-      responseBodySize = calculateBodySize(responseBody);
     }
 
     // Build full URL
@@ -173,7 +143,7 @@ public class LoggingAspect {
 
     return LogEvent.builder()
       // Required fields
-      .serviceName("AUTH_LOGS")
+      .serviceName(serviceName)
       .fullUrl(fullUrl)
       .apiEndpoint(request.getRequestURI())
       .requestMethod(request.getMethod())
@@ -193,7 +163,7 @@ public class LoggingAspect {
       // Error details (if applicable)
       .errorMessage(errorMessage)
       .exceptionType(exceptionType)
-      .exceptionStackTrace(exceptionStackTrace)
+      .exceptionStackTrace(null) // Not available at this level
 
       // Additional fields
       .traceId(traceId)
@@ -209,23 +179,13 @@ public class LoggingAspect {
       .build();
   }
 
-  private HttpServletRequest getHttpServletRequest() {
-    try {
-      ServletRequestAttributes attributes =
-        (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
-      return attributes.getRequest();
-    } catch (IllegalStateException e) {
-      return null;
-    }
-  }
-
   private Map<String, String> extractHeaders(HttpServletRequest request) {
     return Collections.list(request.getHeaderNames())
       .stream()
       .collect(Collectors.toMap(
         h -> h,
         request::getHeader,
-        (v1, v2) -> v1 // in case of duplicates, keep first
+        (v1, v2) -> v1
       ));
   }
 
@@ -239,35 +199,17 @@ public class LoggingAspect {
       ));
   }
 
-  /**
-   * Extract user ID from request attribute (set by JWT filter)
-   * Falls back to X-User-Id header if attribute is not set
-   */
   private String extractUserIdFromRequest(HttpServletRequest request) {
-    // First, try to get from request attribute (set by JWT filter)
     Object userIdAttr = request.getAttribute("userId");
     if (userIdAttr != null) {
       return userIdAttr.toString();
     }
 
-    // Try alternative attribute names that might be used
-    userIdAttr = request.getAttribute("user_id");
-    if (userIdAttr != null) {
-      return userIdAttr.toString();
-    }
-
-    userIdAttr = request.getAttribute("USER_ID");
-    if (userIdAttr != null) {
-      return userIdAttr.toString();
-    }
-
-    // Fallback to X-User-Id header
     String headerUserId = request.getHeader("X-User-Id");
     if (headerUserId != null && !headerUserId.isEmpty()) {
       return headerUserId;
     }
 
-    // No user ID found
     return null;
   }
 
@@ -279,32 +221,41 @@ public class LoggingAspect {
     if (clientIp == null || clientIp.isEmpty()) {
       clientIp = request.getRemoteAddr();
     }
-    // X-Forwarded-For can contain multiple IPs, get the first one
     if (clientIp != null && clientIp.contains(",")) {
       clientIp = clientIp.split(",")[0].trim();
     }
     return clientIp;
   }
 
-  private String getStackTraceAsString(Throwable e) {
-    return Arrays.stream(e.getStackTrace())
-      .map(StackTraceElement::toString)
-      .limit(10) // Limit to first 10 lines to avoid huge logs
-      .collect(Collectors.joining("\n"));
-  }
-
-  private Integer calculateBodySize(Object body) {
-    if (body == null) return 0;
-
+  private String getRequestBody(ContentCachingRequestWrapper request) {
     try {
-      if (body instanceof String) {
-        return ((String) body).getBytes().length;
-      } else {
-        String json = objectMapper.writeValueAsString(body);
-        return json.getBytes().length;
+      byte[] buf = request.getContentAsByteArray();
+      if (buf.length > 0) {
+        return new String(buf, request.getCharacterEncoding());
       }
     } catch (Exception e) {
-      return null; // Unable to calculate size
+      // Ignore
+    }
+    return null;
+  }
+
+  private String getResponseBody(ContentCachingResponseWrapper response) {
+    try {
+      byte[] buf = response.getContentAsByteArray();
+      if (buf.length > 0) {
+        return new String(buf, response.getCharacterEncoding());
+      }
+    } catch (Exception e) {
+      // Ignore
+    }
+    return null;
+  }
+
+  private String getStatusCodeType(int statusCode) {
+    try {
+      return HttpStatus.valueOf(statusCode).getReasonPhrase();
+    } catch (Exception e) {
+      return "Unknown";
     }
   }
 }
