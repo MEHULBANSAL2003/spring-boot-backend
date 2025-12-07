@@ -143,7 +143,7 @@ public class LoggingAspect implements Filter {
 
     return LogEvent.builder()
       // Required fields
-      .serviceName(serviceName)
+      .serviceName("AUTH_LOG")
       .fullUrl(fullUrl)
       .apiEndpoint(request.getRequestURI())
       .requestMethod(request.getMethod())
