@@ -50,6 +50,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
       if (jwtService.validateToken(token)) {
         Long userId = jwtService.getUserIdFromToken(token);
+        request.setAttribute("userId", userId.toString());
 
         // Here we create an authentication object without UserDetails
         UsernamePasswordAuthenticationToken authentication =

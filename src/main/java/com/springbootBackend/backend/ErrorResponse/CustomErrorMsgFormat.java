@@ -1,14 +1,17 @@
 package com.springbootBackend.backend.ErrorResponse;
 
+import lombok.Getter;
+
 import java.time.LocalDateTime;
 
+@Getter
 public class CustomErrorMsgFormat {
 
-    private String error;
-    private String message;
-    private LocalDateTime timestamp;
-    private int status;
-    private String path;
+    private final String error;
+    private final String message;
+    private final LocalDateTime timestamp;
+    private final int status;
+    private final String path;
 
     public CustomErrorMsgFormat(String error, String message, String path, int status){
         this.error = error;
@@ -17,12 +20,6 @@ public class CustomErrorMsgFormat {
         this.status = status;
         this.path = path;
     }
-
-    public String getError() { return error; }
-    public String getMessage() { return message; }
-    public LocalDateTime getTimestamp(){ return timestamp; }
-    public int getStatus() { return status; }
-    public String getPath() { return path; }
 
 
 }
